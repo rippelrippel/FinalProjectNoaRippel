@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinalProjectNoaRippel.Views.SignUpPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:views="clr-namespace:FinalProjectNoaRippel.ViewModels"
+             BackgroundColor="#28396C"
+             Title="SignUpPage"
+             x:DataType="views:SignUpViewModel">
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+        <Style x:Key="ValidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Wheat" />
+        </Style>
+    </ContentPage.Resources>
+
+
+    <Grid ColumnDefinitions="*,8*,*" RowDefinitions="*,4*,*">
+        <!--  Title  -->
+        <HorizontalStackLayout
+            Grid.Column="1"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+            <Label
+                FontSize="24"
+                Text="Create Account"
+                TextColor="Black" />
+        </HorizontalStackLayout>
+
+        <!--  Form Fields  -->
+        <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+
+            <!--  Last Name  -->
+            <Border
+                Margin="0,0,0,10"
+                Padding="10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Entry
+                    FontSize="18"
+                    Placeholder="Last Name"
+                    Text="{Binding LastName}"
+                    TextColor="Wheat" />
+            </Border>
+
+            <!--  First Name  -->
+            <Border
+                Margin="0,0,0,10"
+                Padding="10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Entry
+                    FontSize="18"
+                    Placeholder="First Name"
+                    Text="{Binding FirstName}"
+                    TextColor="Wheat" />
+            </Border>
+
+            <!--  Email  -->
+            <Border
+                Margin="0,0,0,10"
+                Padding="10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Entry
+                    FontSize="18"
+                    Keyboard="Email"
+                    Placeholder="Email"
+                    Text="{Binding UserEmail}">
+                    <Entry.Behaviors>
+                        <toolkit:EmailValidationBehavior
+                            Flags="ValidateOnValueChanged"
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}" />
+                    </Entry.Behaviors>
+                </Entry>
+            </Border>
+
+            <!--  Password  -->
+            <Border
+                Margin="0,0,0,10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Grid
+                    Padding="10"
+                    ColumnDefinitions="*,Auto"
+                    VerticalOptions="Center">
+                    <Entry
+                        x:Name="PasswordEntry"
+                        BackgroundColor="Transparent"
+                        FontSize="18"
+                        IsPassword="{Binding EntryAsPassword}"
+                        Placeholder="Password"
+                        Text="{Binding UserPassword}"
+                        TextColor="Wheat"
+                        VerticalOptions="Center" />
+                    <ImageButton
+                        Margin="5,0,0,0"
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        Command="{Binding ShowPasswordCommand}"
+                        HeightRequest="24"
+                        HorizontalOptions="End"
+                        Source="{Binding PasswordIconCode}"
+                        VerticalOptions="Center"
+                        WidthRequest="24" />
+                </Grid>
+            </Border>
+
+            <!--  Mobile  -->
+            <Border
+                Margin="0,0,0,10"
+                Padding="10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Entry
+                    FontSize="18"
+                    Keyboard="Telephone"
+                    Placeholder="Mobile"
+                    Text="{Binding UserMobile}"
+                    TextColor="Wheat" />
+            </Border>
+
+            <!--  כפתור הרשמה  -->
+            <Button
+                Command="{Binding SignUpCommand}"
+                CornerRadius="8"
+                FontSize="20"
+                HeightRequest="70"
+                Text="Sign Up"
+                BackgroundColor="White"
+                TextColor="#28396C" />
+
+            <!--  Already have an account  -->
+            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                <Label
+                    Margin="2,0,0,0"
+                    FontSize="20"
+                    Text="Already have an account?"
+                    TextColor="Black"
+                    VerticalTextAlignment="Center" />
+                <Button
+                    BackgroundColor="Transparent"
+                    FontSize="18"
+                    Text="Sign In"
+                    TextColor="Wheat"
+                    Command="{Binding NavigateToSignInCommand}" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinalProjectNoaRippel.Views.UserDetailsPage"
+             xmlns:vm="clr-namespace:FinalProjectNoaRippel.ViewModels"
+             x:DataType="vm:UserDetailsPageViewModel">
+    
+    
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Offset="0.0" Color="#C6426E" />
+            <GradientStop Offset="1.0" Color="#642B73" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+    <Grid>
+
+
+        <ScrollView>
+            <VerticalStackLayout Padding="32,70,32,40" Spacing="14">
+
+                <ImageButton
+                    BackgroundColor="Transparent"
+                    Command="{Binding DeleteCommand}"
+                    HeightRequest="36"
+                    HorizontalOptions="End"
+                    IsVisible="{Binding IsDeleteVisible}"
+                    Margin="0,14,14,0"
+                    Source="trash.png"
+                    VerticalOptions="Start"
+                    WidthRequest="36" />
+                <Border
+                    Padding="16,0"
+                    BackgroundColor="#80FFFFFF"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="1.5">
+                    <Entry
+                        FontSize="17"
+                        HeightRequest="52"
+                        Placeholder="First Name"
+                        PlaceholderColor="#AAFFFFFF"
+                        Text="{Binding FirstName}"
+                        TextColor="White" />
+                </Border>
+
+                <Border
+                    Padding="16,0"
+                    BackgroundColor="#80FFFFFF"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="1.5">
+                    <Entry
+                        FontSize="17"
+                        HeightRequest="52"
+                        Placeholder="Last Name"
+                        PlaceholderColor="#AAFFFFFF"
+                        Text="{Binding LastName}"
+                        TextColor="White" />
+                </Border>
+
+                <Border
+                    Padding="16,0"
+                    BackgroundColor="#55FFFFFF"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="1.5">
+                    <Entry
+                        FontSize="17"
+                        HeightRequest="52"
+                        IsEnabled="False"
+                        Keyboard="Email"
+                        Placeholder="Email"
+                        PlaceholderColor="#AAFFFFFF"
+                        Text="{Binding Email}"
+                        TextColor="#CCFFFFFF" />
+                </Border>
+
+                <Border
+                    Padding="16,0"
+                    BackgroundColor="#80FFFFFF"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="1.5">
+                    <Entry
+                        FontSize="17"
+                        HeightRequest="52"
+                        Keyboard="Telephone"
+                        Placeholder="Mobile"
+                        PlaceholderColor="#AAFFFFFF"
+                        Text="{Binding Mobile}"
+                        TextColor="White" />
+                </Border>
+
+                <Button
+                    BackgroundColor="#5E35B1"
+                    Command="{Binding UpdateCommand}"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HeightRequest="52"
+                    Margin="0,16,0,0"
+                    Text="Update"
+                    TextColor="White" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

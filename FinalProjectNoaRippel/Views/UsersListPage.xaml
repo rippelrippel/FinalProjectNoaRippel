@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinalProjectNoaRippel.Views.UsersListPage"
+             xmlns:models="clr-namespace:FinalProjectNoaRippel.Models"
+             xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
+             x:DataType="viewmodels:UsersListViewModel"
+
+             Title="UsersListPage">
+
+
+    <Grid RowDefinitions=".13*,.13*,.9*">
+
+        <!--  Header  -->
+        <Grid ColumnDefinitions="7*,3*">
+            <Label
+                Margin="80,0,0,0"
+                FontAttributes="Bold"
+                FontSize="30"
+                HorizontalOptions="Center"
+                Text="Users List"
+                TextColor="CadetBlue"
+                VerticalOptions="Center" />
+
+        </Grid>
+
+        <!--  Find & Filter Users 1: 10  -->
+        <Grid Grid.Row="1" ColumnDefinitions="9*,1*">
+            <SearchBar
+                Placeholder="find user"
+                SearchCommand="{Binding SearchCommand}"
+                Text="{Binding SearchText}" />
+
+            <Button
+                Grid.Column="1"
+                Margin="0,0,0,15"
+                Background="Transparent"
+                Text="M" />
+        </Grid>
+
+        <!--  Users Collection  -->
+        <CollectionView
+            Grid.Row="2"
+            ItemsSource="{Binding AllUsers}"
+            SelectionMode="None">
+
+            <!--  Empty View  -->
+            <CollectionView.EmptyView>
+                <StackLayout
+                    Padding="20"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                    <Label
+                        FontSize="24"
+                        HorizontalTextAlignment="Center"
+                        Text="Users not found!"
+                        TextColor="Gray" />
+
+                    <Label
+                        Margin="0,0,0,100"
+                        FontSize="24"
+                        HorizontalTextAlignment="Center"
+                        Text="Pull down to refresh"
+                        TextColor="Gray" />
+
+                </StackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:User">
+                    <Border
+                        Margin="15,7"
+                        Padding="15"
+                        BackgroundColor="White"
+                        Stroke="LightGray"
+                        StrokeShape="RoundRectangle 10">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:UsersListViewModel}}, Path=UserDetailsPageCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid
+                            ColumnDefinitions="*,Auto"
+                            RowDefinitions="Auto,Auto"
+                            RowSpacing="5">
+
+                            <!--  Name Row  -->
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="{Binding FirstName}"
+                                    TextColor="Gray"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Margin="5,0,0,0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="{Binding LastName}"
+                                    TextColor="Gray"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <!--  Email  -->
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                FontSize="13"
+                                Text="{Binding UserEmail}"
+                                TextColor="Gray"
+                                VerticalOptions="Center" />
+
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

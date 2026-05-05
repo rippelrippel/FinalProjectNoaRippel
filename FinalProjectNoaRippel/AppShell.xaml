@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="FinalProjectNoaRippel.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:FinalProjectNoaRippel"
+    xmlns:maui="clr-namespace:FinalProjectNoaRippel"
+    xmlns:vm="clr-namespace:FinalProjectNoaRippel.ViewModels"
+    x:DataType="vm:AppShellViewModel"
+    xmlns:views="clr-namespace:FinalProjectNoaRippel.Views"
+    Shell.NavBarHasShadow="False"
+    Title="FinalProjectNoaRippel">
+
+    
+    
+    
+    
+    <Shell.Resources>
+        <Style TargetType="Shell" ApplyToDerivedTypes="True">
+            <Setter Property="Shell.BackgroundColor" Value="#F5F5F5" />
+            <Setter Property="Shell.TitleColor" Value="#333333" />
+        </Style>
+    </Shell.Resources>
+    <Shell.TitleView>
+        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+            <ImageButton
+                BackgroundColor="#F0E68C"
+                Command="{Binding GoToHomeCommand}"
+                CornerRadius="8"
+                HeightRequest="40"
+                WidthRequest="44"
+                Padding="6"
+                Source="home.png" />
+            <ImageButton
+                BackgroundColor="#F0E68C"
+                Command="{Binding GoToAccountCommand}"
+                CornerRadius="8"
+                HeightRequest="40"
+                WidthRequest="44"
+                Padding="6"
+                Source="fp.png" />
+            <ImageButton
+                BackgroundColor="#F0E68C"
+                Command="{Binding GoToAdminCommand}"
+                CornerRadius="8"
+                HeightRequest="40"
+                WidthRequest="44"
+                Padding="6"
+                IsVisible="{Binding IsAdmin}"
+                Source="ap" />
+            <ImageButton
+                BackgroundColor="#F0E68C"
+                Command="{Binding LogoutCommand}"
+                CornerRadius="8"
+                HeightRequest="40"
+                WidthRequest="44"
+                Padding="6"
+                Source="out.png" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate views:MainPageView}"
+        Route="MainPageView" />
+    <ShellContent
+        Title="Account"
+        ContentTemplate="{DataTemplate views:UserDetailsPage}"
+        Route="UserDetailsPage"
+        Shell.FlyoutItemIsVisible="False" />
+    <ShellContent
+        Title="Admin"
+        ContentTemplate="{DataTemplate views:AdminPage}"
+        Route="AdminPage"
+        Shell.FlyoutItemIsVisible="False" />
+    <ShellContent
+        Title="Users"
+        ContentTemplate="{DataTemplate views:UsersListPage}"
+        Route="UsersListPage"
+        Shell.FlyoutItemIsVisible="False" />
+</Shell>
