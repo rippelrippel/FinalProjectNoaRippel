@@ -4,24 +4,31 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="FinalProjectNoaRippel.Views.MainPageView"
              BackgroundColor="white"
-             Title="MainPageView">
+             Title="">
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
     <ScrollView>
-        <VerticalStackLayout Padding="24,30" Spacing="10">
+        <VerticalStackLayout Padding="24,10" Spacing="10">
 
             <!--taital-->
             <Label
             FontAttributes="Bold"
-            FontSize="22"
-            Text="choose your food"
+            FontSize="26"
+            Text="כיתוב כלשהו"
             TextColor="Black" 
-            HorizontalOptions="Center"
-
-            />
-
+            HorizontalOptions="Center"/>
+            <BoxView
+                HeightRequest="2.5"
+                BackgroundColor="#38396C"
+                Margin="0,6,0,0" />
+            <Border
+                Padding="5"
+                StrokeShape="RoundRectangle 8"
+                Stroke="Transparent"
+                StrokeThickness="1">
+            </Border>
             <!--Blocks-->
             <CollectionView ItemsSource="{Binding FoodCategories}">
                 <!-- עושה שתי עמודות של 2 בלוקים-->

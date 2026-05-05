@@ -6,7 +6,7 @@
              xmlns:views="clr-namespace:FinalProjectNoaRippel.ViewModels"
              xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
              BackgroundColor="#28396C"
-             Title="SignInPage">
+             Title="">
 
 
 
