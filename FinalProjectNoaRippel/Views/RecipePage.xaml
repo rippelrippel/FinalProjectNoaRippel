@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinalProjectNoaRippel.Views.RecipePage"
+             BackgroundColor="White"
+             Title="RecipePage">
+    <ScrollView>
+        <VerticalStackLayout Padding="24,10" Spacing="10">
+
+            <Label
+                Text="{Binding RecipeName}"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="Black" />
+
+            <BoxView HeightRequest="2" BackgroundColor="Gray" />
+            <Label
+                Text="מרכיבים"
+                FontSize="20"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="End"
+                TextColor="Black" />
+
+            <CollectionView ItemsSource="{Binding Ingredients}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,Auto" Padding="5">
+                            <Label
+                                Text="{Binding .}"
+                                FontSize="16"
+                                HorizontalTextAlignment="End"
+                                VerticalOptions="Center"
+                                TextColor="Black" />
+                            <Border
+                                Grid.Column="1"
+                                WidthRequest="24"
+                                HeightRequest="24"
+                                Stroke="#28396C"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 4"
+                                VerticalOptions="Center"
+                                Margin="10,0,0,0" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <BoxView HeightRequest="2" BackgroundColor="Gray" />
+
+            <!-- הוראות -->
+            <Label
+                Text="הוראות הכנה"
+                FontSize="20"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="End"
+                TextColor="Black" />
+
+            <CollectionView ItemsSource="{Binding Instructions}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label
+                            Text="{Binding .}"
+                            FontSize="16"
+                            HorizontalTextAlignment="End"
+                            TextColor="Black"
+                            Margin="0,5" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

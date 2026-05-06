@@ -2,11 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="FinalProjectNoaRippel.Views.MainPageView"
-             BackgroundColor="white"
-             Title="">
-
-    <ContentPage.Resources>
+             x:Class="FinalProjectNoaRippel.Views.FoodListPage"
+             BackgroundColor="White"
+             Title="FoodListPage">
+ <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
     <ScrollView>
@@ -17,17 +16,8 @@
                 Text="כיתוב כלשהו"
                 TextColor="Black"
                 HorizontalOptions="Center"/>
-            <BoxView
-                HeightRequest="2.5"
-                BackgroundColor="#38396C"
-                Margin="0,6,0,0" />
-            <Border
-                Padding="5"
-                StrokeShape="RoundRectangle 8"
-                Stroke="Transparent"
-                StrokeThickness="1">
-            </Border>
-            <CollectionView ItemsSource="{Binding FoodCategories}">
+            <BoxView HeightRequest="2" BackgroundColor="Gray" />
+            <CollectionView ItemsSource="{Binding FoodItems}">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
                 </CollectionView.ItemsLayout>
@@ -43,27 +33,35 @@
                                 HeightRequest="150">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}"
                                         CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
-                                <Image
-                                    Aspect="AspectFill"
-                                    Source="{Binding ImageSource}" />
+                                <Grid>
+                                    <Image Aspect="AspectFill" Source="{Binding ImageSource}" />
+                                    <Label
+                                        Text="{Binding Name}"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        VerticalOptions="End"
+                                        HorizontalOptions="Center"
+                                        Margin="0,0,0,8" />
+                                </Grid>
                             </Frame>
                             <!-- בלוק הוספה -->
                             <Frame
                                 IsVisible="{Binding IsAddButton}"
+                                Padding="0"
                                 CornerRadius="8"
                                 BackgroundColor="Wheat"
                                 HeightRequest="150">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}"
                                         CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
                                     <Label Text="+" FontSize="40" HorizontalOptions="Center" TextColor="#555" />
-                                    <Label Text="הוסף מאכל" FontSize="14" HorizontalOptions="Center" TextColor="#555" />
+                                    <Label Text="הוסף מתכון" FontSize="14" HorizontalOptions="Center" TextColor="#555" />
                                 </VerticalStackLayout>
                             </Frame>
                         </Grid>

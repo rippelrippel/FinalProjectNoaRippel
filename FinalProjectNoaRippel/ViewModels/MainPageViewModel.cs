@@ -57,7 +57,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 }
                 else
                 {
-                    await Shell.Current.GoToAsync("FoodDetailPage");
+                    await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={category.Name}");
                 }
             });
         }

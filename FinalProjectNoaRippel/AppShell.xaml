@@ -19,20 +19,29 @@
             <Setter Property="Shell.TitleColor" Value="#333333" />
         </Style>
     </Shell.Resources>
-
+    <ShellContent
+    Title="Home"
+    Icon="home.png"
+    ContentTemplate="{DataTemplate views:MainPageView}"
+    Route="MainPageView" />
 
     <ShellContent
-        Title="Home"
-        Icon="home.png"
-        ContentTemplate="{DataTemplate views:MainPageView}"
-        Route="MainPageView" />
-
+    Title="FoodList"
+    ContentTemplate="{DataTemplate views:FoodListPage}"
+    Route="FoodListPage"
+    Shell.FlyoutItemIsVisible="False" />
 
     <ShellContent
-        Title="My Account"
-        Icon="fp.png"
-        ContentTemplate="{DataTemplate views:UserDetailsPage}"
-        Route="UserDetailsPage" />
+    Title="Recipe"
+    ContentTemplate="{DataTemplate views:RecipePage}"
+    Route="RecipePage"
+    Shell.FlyoutItemIsVisible="False" />
+
+    <ShellContent
+    Title="My Account"
+    Icon="fp.png"
+    ContentTemplate="{DataTemplate views:UserDetailsPage}"
+    Route="UserDetailsPage" />
 
     <!-- only admin -->
     <ShellContent
