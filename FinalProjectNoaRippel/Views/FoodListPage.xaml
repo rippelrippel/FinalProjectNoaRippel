@@ -8,8 +8,10 @@
  <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
-    <ScrollView>
-        <VerticalStackLayout Padding="24,10" Spacing="10">
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,10" Spacing="10">
             <Label
                 FontAttributes="Bold"
                 FontSize="26"
@@ -65,9 +67,29 @@
                                 </VerticalStackLayout>
                             </Frame>
                         </Grid>
+                        
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,*"
+            Padding="24,12"
+            BackgroundColor="White">
+            <Label
+                Grid.Column="0"
+                Text="&#xE872;"
+                FontFamily="MaterialIcons"
+                FontSize="28"
+                TextColor="#CC0000"
+                HorizontalOptions="Start"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DeleteCategoryCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+    </Grid>
 </ContentPage>

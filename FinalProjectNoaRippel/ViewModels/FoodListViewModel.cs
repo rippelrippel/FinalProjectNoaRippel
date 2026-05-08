@@ -12,12 +12,16 @@ namespace FinalProjectNoaRippel.ViewModels
     public class FoodListViewModel : ViewModelBase
     {
         private string? _categoryName;
+
+        public static string? CurrentCategory { get; private set; }
+
         public string? CategoryName
         {
             get => _categoryName;
             set
             {
                 _categoryName = value;
+                CurrentCategory = value; // שומר את הקטגוריה הנוכחית
                 OnPropertyChanged();
                 LoadFoods(value!);
             }
@@ -25,6 +29,7 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public ObservableCollection<FoodItem> FoodItems { get; set; } = new();
         public ICommand SelectFoodCommand { get; }
+        public ICommand DeleteCategoryCommand { get; }
 
         public FoodListViewModel()
         {
@@ -34,6 +39,24 @@ namespace FinalProjectNoaRippel.ViewModels
                     await Shell.Current.GoToAsync($"///AddRecipePage?FoodName={_categoryName}");
                 else
                     await Shell.Current.GoToAsync($"///RecipePage?FoodName={food.Name}");
+            });
+            DeleteCategoryCommand = new Command(async () =>
+            {
+                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                    "מחיקת מאכל",
+                    $"האם אתה בטוח שאתה רוצה למחוק את \"{_categoryName}\"?",
+                    "כן, מחק",
+                    "ביטול"
+                );
+
+                if (confirmed)
+                {
+                    _foodData.Remove(_categoryName!);
+                    var mainVm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
+                    mainVm?.RemoveCategory(_categoryName!);
+
+                    await Shell.Current.GoToAsync("///MainPageView");
+                }
             });
         }
 
@@ -88,6 +111,29 @@ namespace FinalProjectNoaRippel.ViewModels
                 foreach (var item in items)
                     FoodItems.Add(item);
         }
+        public static void RemoveFoodFromCategory(string foodName)
+        {
+            foreach (var category in _foodData.Values)
+            {
+                var item = category.FirstOrDefault(f => f.Name == foodName);
+                if (item != null)
+                {
+                    category.Remove(item);
+                    return;
+                }
+            }
+        }
+        public static void AddNewCategory(string categoryName)
+        {
+            if (!_foodData.ContainsKey(categoryName))
+            {
+                _foodData[categoryName] = new List<FoodItem>
+        {
+            new FoodItem { IsAddButton = true }
+        };
+            }
+        }
+
     }
 
     public class FoodItem

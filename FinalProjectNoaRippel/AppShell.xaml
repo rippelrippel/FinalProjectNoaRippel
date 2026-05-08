@@ -11,6 +11,21 @@
     Shell.NavBarHasShadow="False"
     Title="FinalProjectNoaRippel">
 
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto">
+            <Label
+            Grid.Column="1"
+            Text="Back"
+            FontSize="16"
+            TextColor="Black"
+            VerticalOptions="Center"
+            Margin="0,0,10,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+    </Shell.TitleView>
 
     <Shell.Resources>
         <Style TargetType="Shell" ApplyToDerivedTypes="True">
@@ -53,6 +68,12 @@
     Title="AddRecipe"
     ContentTemplate="{DataTemplate views:AddRecipePage}"
     Route="AddRecipePage"
+    Shell.FlyoutItemIsVisible="False" />
+    
+    <ShellContent
+    Title="EditRecipe"
+    ContentTemplate="{DataTemplate views:EditRecipePage}"
+    Route="EditRecipePage"
     Shell.FlyoutItemIsVisible="False" />
     
     <!-- only admin -->

@@ -4,13 +4,16 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
     [QueryProperty(nameof(FoodName), "FoodName")]
+    [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class RecipePageViewModel : ViewModelBase
     {
         private string? _foodName;
+        private string? _categoryName;
         public string FoodName
         {
             get => _foodName;
@@ -21,6 +24,45 @@ namespace FinalProjectNoaRippel.ViewModels
                 LoadRecipe(value);
             }
         }
+
+        public string CategoryName
+        {
+            get => _categoryName;
+            set { _categoryName = value; OnPropertyChanged(); }
+        }
+        public static (string name, List<string> ingredients, List<string> instructions)? GetRecipe(string foodName)
+        {
+            if (_recipes.TryGetValue(foodName, out var recipe))
+                return recipe;
+            return null;
+        }
+        public ICommand DeleteRecipeCommand { get; }
+        public ICommand GoToEditCommand { get; }
+
+        public RecipePageViewModel()
+        {
+            DeleteRecipeCommand = new Command(async () =>
+            {
+                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                    "מחיקת מתכון",
+                    $"האם אתה בטוח שאתה רוצה למחוק את \"{RecipeName}\"?",
+                    "כן, מחק",
+                    "ביטול"
+                );
+
+                if (confirmed)
+                {
+                    _recipes.Remove(_foodName!);
+                    FoodListViewModel.RemoveFoodFromCategory(_foodName!);
+                    await Shell.Current.GoToAsync("..");
+                }
+            });
+            GoToEditCommand = new Command(async () =>
+            {
+                await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
+            });
+        }
+
         public string RecipeName { get; set; } = "";
         public ObservableCollection<string> Ingredients { get; set; } = new();
         public ObservableCollection<string> Instructions { get; set; } = new();

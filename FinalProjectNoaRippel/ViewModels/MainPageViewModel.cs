@@ -52,7 +52,7 @@ namespace FinalProjectNoaRippel.ViewModels
         public MainPageViewModel()
         {
             GoToAccountCommand = new Command(async () =>
-                await Shell.Current.GoToAsync("//UserDetailsPage"));
+                await Shell.Current.GoToAsync("///UserDetailsPage"));
 
             NavigateCommand = new Command<FoodCategory>(async (category) =>
             {
@@ -61,6 +61,12 @@ namespace FinalProjectNoaRippel.ViewModels
                 else
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={category.Name}");
             });
+        }
+        public void RemoveCategory(string categoryName)
+        {
+            var item = FoodCategories.FirstOrDefault(f => f.Name == categoryName);
+            if (item != null)
+                FoodCategories.Remove(item);
         }
 
         public void RefreshWelcome()

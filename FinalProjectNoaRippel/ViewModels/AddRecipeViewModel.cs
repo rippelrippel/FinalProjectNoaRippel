@@ -95,7 +95,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 var newFood = new FoodItem
                 {
                     Name = RecipeName,
-                    ImageSource = SelectedImage ?? "cookies.png"
+                    ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
                 FoodListViewModel.AddFoodToCategory(FoodName!, newFood);
 

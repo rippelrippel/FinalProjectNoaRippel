@@ -4,8 +4,10 @@
              x:Class="FinalProjectNoaRippel.Views.RecipePage"
              BackgroundColor="White"
              Title="RecipePage">
-    <ScrollView>
-        <VerticalStackLayout Padding="24,10" Spacing="10">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,10" Spacing="10">
 
             <Label
                 Text="{Binding RecipeName}"
@@ -56,19 +58,49 @@
                 HorizontalTextAlignment="End"
                 TextColor="Black" />
 
-            <CollectionView ItemsSource="{Binding Instructions}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label
+                <CollectionView ItemsSource="{Binding Instructions}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label
                             Text="{Binding .}"
                             FontSize="16"
                             HorizontalTextAlignment="End"
                             TextColor="Black"
                             Margin="0,5" />
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-        </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
     </ScrollView>
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,*,*"
+            Padding="24,12"
+            BackgroundColor="White">
+
+            <Label
+                Grid.Column="0"
+                Text="&#xE872;"
+                FontFamily="MaterialIcons"
+                FontSize="28"
+                TextColor="Red"
+                HorizontalOptions="Start"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DeleteRecipeCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Grid.Column="2"
+                Text="Edit recipe"
+                FontSize="16"
+                TextColor="Black"
+                HorizontalOptions="End"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToEditCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+    </Grid>
 </ContentPage>

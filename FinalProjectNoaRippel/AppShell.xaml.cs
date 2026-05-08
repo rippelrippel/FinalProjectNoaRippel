@@ -17,7 +17,7 @@ namespace FinalProjectNoaRippel
             Routing.RegisterRoute(nameof(Views.UsersListPage), typeof(Views.UsersListPage));
             Routing.RegisterRoute(nameof(Views.UserDetailsPage), typeof(Views.UserDetailsPage));
             Routing.RegisterRoute(nameof(Views.AddFoodPage), typeof(Views.AddFoodPage));
-
+            //Routing.RegisterRoute(nameof(Views.EditRecipePage), typeof(Views.EditRecipePage));
         }
     }
 

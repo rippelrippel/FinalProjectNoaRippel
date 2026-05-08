@@ -62,8 +62,10 @@ namespace FinalProjectNoaRippel.ViewModels
                 var newCategory = new FoodCategory
                 {
                     Name = FoodName,
-                    ImageSource = SelectedImage ?? "nophoto.png"
+                    ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
+
+                FoodListViewModel.AddNewCategory(FoodName!);
 
                 var vm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
                 vm?.AddCategory(newCategory);
