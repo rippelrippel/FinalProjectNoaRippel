@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
@@ -13,12 +12,12 @@ namespace FinalProjectNoaRippel.ViewModels
         public string? Name { get; set; }
         public string? ImageSource { get; set; }
         public bool IsAddButton { get; set; } = false;
-
     }
 
     public class MainPageViewModel : ViewModelBase
     {
         private string _welcomeText = string.Empty;
+
         public string WelcomeText
         {
             get => _welcomeText;
@@ -34,16 +33,22 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public ObservableCollection<FoodCategory> FoodCategories { get; } = new()
         {
-            new FoodCategory { Name = "cookies", ImageSource = "cookies.jpg" },
-            new FoodCategory { Name = "cinnamon rolls", ImageSource = "cinnamonrolls.jpg" },
-            new FoodCategory { Name = "chocolate cake", ImageSource = "chocolatecake.jpg" },
-            new FoodCategory { Name = "cupcake", ImageSource = "cupcake.jpg" },
-            new FoodCategory { Name = "pasta", ImageSource = "pasta.jpg" },
-            new FoodCategory { IsAddButton = true }, 
+            new FoodCategory { Name = "cookies", ImageSource = "cookies.png" },
+            new FoodCategory { Name = "cinnamon rolls", ImageSource = "cinnamonrolls.png" },
+            new FoodCategory { Name = "chocolate cake", ImageSource = "chocolatecake.png" },
+            new FoodCategory { Name = "cupcake", ImageSource = "cupcake.png" },
+            new FoodCategory { Name = "pasta", ImageSource = "pasta.png" },
+            new FoodCategory { IsAddButton = true },
         };
+
+        public void AddCategory(FoodCategory category)
+        {
+            FoodCategories.Insert(FoodCategories.Count - 1, category);
+        }
 
         public ICommand GoToAccountCommand { get; }
         public ICommand NavigateCommand { get; }
+
         public MainPageViewModel()
         {
             GoToAccountCommand = new Command(async () =>
@@ -52,13 +57,9 @@ namespace FinalProjectNoaRippel.ViewModels
             NavigateCommand = new Command<FoodCategory>(async (category) =>
             {
                 if (category.IsAddButton)
-                {
-                    await Shell.Current.GoToAsync("AddFoodPage");
-                }
+                    await Shell.Current.GoToAsync("///AddFoodPage");
                 else
-                {
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={category.Name}");
-                }
             });
         }
 

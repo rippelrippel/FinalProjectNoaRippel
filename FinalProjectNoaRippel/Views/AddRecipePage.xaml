@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinalProjectNoaRippel.Views.AddRecipePage"
+             xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
+             x:DataType="viewmodels:AddRecipeViewModel"
+             BackgroundColor="White"
+             Title="AddRecipePage">
+    <ScrollView>
+        <VerticalStackLayout Padding="24,20" Spacing="10">
+
+            <Label Text="שם המתכון" FontSize="16" HorizontalTextAlignment="End" TextColor="Black" />
+            <Border Padding="10" Stroke="#ccc" StrokeShape="RoundRectangle 8" StrokeThickness="1">
+                <Entry
+                    Placeholder="הכנס שם מתכון"
+                    Text="{Binding RecipeName}"
+                    HorizontalTextAlignment="End"
+                    TextColor="Black" />
+            </Border>
+
+            <Label Text="מרכיבים" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="End" TextColor="Black" />
+            <CollectionView ItemsSource="{Binding Ingredients}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:IngredientItem">
+                        <Border Padding="10" Stroke="#ccc" StrokeShape="RoundRectangle 8" StrokeThickness="1" Margin="0,0,0,5">
+                            <Entry
+                            Text="{Binding Text}"
+                            Placeholder="מרכיב"
+                            HorizontalTextAlignment="End"
+                            TextColor="Black" />        
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button
+                Text="+ הוסף מרכיב"
+                BackgroundColor="Transparent"
+                TextColor="#28396C"
+                HorizontalOptions="End"
+                Command="{Binding AddIngredientCommand}" />
+
+            <BoxView HeightRequest="1" BackgroundColor="#ccc" />
+            
+            
+            <Label Text="הוראות הכנה" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="End" TextColor="Black" />
+            <CollectionView ItemsSource="{Binding Instructions}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:IngredientItem">
+                        <Border Padding="10" Stroke="#ccc" StrokeShape="RoundRectangle 8" StrokeThickness="1" Margin="0,0,0,5">
+                            <Entry
+                                Text="{Binding Text}"
+                                Placeholder="הוראה"
+                                HorizontalTextAlignment="End"
+                                TextColor="Black" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button
+                Text="+ הוסף הוראה"
+                BackgroundColor="Transparent"
+                TextColor="#28396C"
+                HorizontalOptions="End"
+                Command="{Binding AddInstructionCommand}" />
+
+            <BoxView HeightRequest="1" BackgroundColor="#ccc" />
+            
+            <Label Text="תמונה" FontSize="16" HorizontalTextAlignment="End" TextColor="Black" />
+            <Border
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1"
+                HeightRequest="200">
+                <Grid>
+                    <Image
+                        Source="{Binding SelectedImage}"
+                        Aspect="AspectFill"
+                        IsVisible="{Binding HasImage}" />
+                    <VerticalStackLayout
+                        IsVisible="{Binding HasImage, Converter={StaticResource InverseBoolConverter}}"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"> 
+                        <Label Text="+" FontSize="50" HorizontalOptions="Center" TextColor="#555" />
+                        <Label Text="בחר תמונה" FontSize="14" HorizontalOptions="Center" TextColor="#555" />
+                    </VerticalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PickImageCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </Border>
+            <Button
+                Text="שמור"
+                BackgroundColor="#28396C"
+                TextColor="White"
+                CornerRadius="8"
+                HeightRequest="50"
+                Command="{Binding SaveCommand}" />
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

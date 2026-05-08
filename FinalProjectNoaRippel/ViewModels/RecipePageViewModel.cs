@@ -10,7 +10,7 @@ namespace FinalProjectNoaRippel.ViewModels
     [QueryProperty(nameof(FoodName), "FoodName")]
     public class RecipePageViewModel : ViewModelBase
     {
-        private string _foodName;
+        private string? _foodName;
         public string FoodName
         {
             get => _foodName;
@@ -24,7 +24,7 @@ namespace FinalProjectNoaRippel.ViewModels
         public string RecipeName { get; set; } = "";
         public ObservableCollection<string> Ingredients { get; set; } = new();
         public ObservableCollection<string> Instructions { get; set; } = new();
-        private readonly Dictionary<string, (string name, List<string> ingredients, List<string> instructions)> _recipes = new()
+        private static readonly Dictionary<string, (string name, List<string> ingredients, List<string> instructions)> _recipes = new()
         {
             ["Chocolate Chip"] = (
         "Chocolate Chip Cookies",
@@ -51,6 +51,11 @@ namespace FinalProjectNoaRippel.ViewModels
             }
 
             OnPropertyChanged(nameof(RecipeName));
+        }
+
+        public static void AddRecipe(string foodName, string recipeName, List<string> ingredients, List<string> instructions, string? image = null)
+        {
+            _recipes[foodName] = (recipeName, ingredients, instructions);
         }
     }
 }

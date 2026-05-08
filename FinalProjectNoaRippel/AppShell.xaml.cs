@@ -1,4 +1,5 @@
 ﻿using FinalProjectNoaRippel.ViewModels;
+using FinalProjectNoaRippel.Views;
 
 namespace FinalProjectNoaRippel
 {
@@ -15,6 +16,7 @@ namespace FinalProjectNoaRippel
             Routing.RegisterRoute(nameof(Views.AdminPage), typeof(Views.AdminPage));
             Routing.RegisterRoute(nameof(Views.UsersListPage), typeof(Views.UsersListPage));
             Routing.RegisterRoute(nameof(Views.UserDetailsPage), typeof(Views.UserDetailsPage));
+            Routing.RegisterRoute(nameof(Views.AddFoodPage), typeof(Views.AddFoodPage));
 
         }
     }

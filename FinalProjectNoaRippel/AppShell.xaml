@@ -25,7 +25,7 @@
     ContentTemplate="{DataTemplate views:MainPageView}"
     Route="MainPageView" />
 
-    <ShellContent
+   <ShellContent
     Title="FoodList"
     ContentTemplate="{DataTemplate views:FoodListPage}"
     Route="FoodListPage"
@@ -36,13 +36,25 @@
     ContentTemplate="{DataTemplate views:RecipePage}"
     Route="RecipePage"
     Shell.FlyoutItemIsVisible="False" />
-
+    
+    <ShellContent
+    Title="AddFood"
+    ContentTemplate="{DataTemplate views:AddFoodPage}"
+    Route="AddFoodPage"
+    Shell.FlyoutItemIsVisible="False" />
+    
     <ShellContent
     Title="My Account"
     Icon="fp.png"
     ContentTemplate="{DataTemplate views:UserDetailsPage}"
     Route="UserDetailsPage" />
-
+    
+    <ShellContent
+    Title="AddRecipe"
+    ContentTemplate="{DataTemplate views:AddRecipePage}"
+    Route="AddRecipePage"
+    Shell.FlyoutItemIsVisible="False" />
+    
     <!-- only admin -->
     <ShellContent
         Title="Admin"
