@@ -38,6 +38,7 @@ namespace FinalProjectNoaRippel.ViewModels
         }
         public ICommand DeleteRecipeCommand { get; }
         public ICommand GoToEditCommand { get; }
+        public ICommand ToggleIngredientCommand { get; }
 
         public RecipePageViewModel()
         {
@@ -61,11 +62,17 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
             });
+            ToggleIngredientCommand = new Command<CheckableItem>(item =>
+            {
+                if (item != null)
+                    item.IsChecked = !item.IsChecked;
+            });
         }
 
         public string RecipeName { get; set; } = "";
-        public ObservableCollection<string> Ingredients { get; set; } = new();
-        public ObservableCollection<string> Instructions { get; set; } = new();
+        public ObservableCollection<CheckableItem> Ingredients { get; set; } = new();
+        public ObservableCollection<CheckableItem> Instructions { get; set; } = new();
+
         private static readonly Dictionary<string, (string name, List<string> ingredients, List<string> instructions)> _recipes = new()
         {
             ["Chocolate Chip"] = (
@@ -88,8 +95,10 @@ namespace FinalProjectNoaRippel.ViewModels
             if (_recipes.TryGetValue(foodName, out var recipe))
             {
                 RecipeName = recipe.name;
-                foreach (var i in recipe.ingredients) Ingredients.Add(i);
-                foreach (var i in recipe.instructions) Instructions.Add(i);
+                foreach (var i in recipe.ingredients)
+                    Ingredients.Add(new CheckableItem { Text = i });
+                foreach (var i in recipe.instructions)
+                    Instructions.Add(new CheckableItem { Text = i });
             }
 
             OnPropertyChanged(nameof(RecipeName));
@@ -98,6 +107,17 @@ namespace FinalProjectNoaRippel.ViewModels
         public static void AddRecipe(string foodName, string recipeName, List<string> ingredients, List<string> instructions, string? image = null)
         {
             _recipes[foodName] = (recipeName, ingredients, instructions);
+        }
+    }
+
+    public class CheckableItem : ViewModelBase
+    {
+        private bool _isChecked;
+        public string Text { get; set; } = "";
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set { _isChecked = value; OnPropertyChanged(); }
         }
     }
 }

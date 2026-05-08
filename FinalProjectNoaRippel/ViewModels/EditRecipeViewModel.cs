@@ -80,18 +80,6 @@ namespace FinalProjectNoaRippel.ViewModels
                 await Shell.Current.GoToAsync($"///RecipePage?FoodName={FoodName}&CategoryName={CategoryName}");
             });
 
-            GoBackCommand = new Command(async () =>
-            {
-                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
-                    "יציאה מעריכה",
-                    "האם אתה בטוח שאתה רוצה לצאת? השינויים לא יישמרו.",
-                    "כן, צא",
-                    "ביטול"
-                );
-
-                if (confirmed)
-                    await Shell.Current.GoToAsync($"///RecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
-            });
         }
 
         // טוען את נתוני המתכון הקיים לתוך השדות לעריכה

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+
+    <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinalProjectNoaRippel.Views.RecipePage"
+             xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
+             xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
              BackgroundColor="White"
              Title="RecipePage">
-
+        
+    <ContentPage.Resources>
+        <helper:BoolToStrikethroughConverter x:Key="BoolToStrikethroughConverter" />
+    </ContentPage.Resources>
+        
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,10" Spacing="10">
@@ -24,17 +31,23 @@
                 HorizontalTextAlignment="End"
                 TextColor="Black" />
 
-            <CollectionView ItemsSource="{Binding Ingredients}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="*,Auto" Padding="5">
+                <CollectionView ItemsSource="{Binding Ingredients}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:CheckableItem">
+                            <Grid ColumnDefinitions="*,Auto" Padding="5">
                             <Label
-                                Text="{Binding .}"
+                                Text="{Binding Text}"
                                 FontSize="16"
                                 HorizontalTextAlignment="End"
                                 VerticalOptions="Center"
-                                TextColor="Black" />
-                            <Border
+                                TextColor="Black"
+                                TextDecorations="{Binding IsChecked, Converter={StaticResource BoolToStrikethroughConverter}}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleIngredientCommand}" CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                                </Label>
+                                
+                                <Border
                                 Grid.Column="1"
                                 WidthRequest="24"
                                 HeightRequest="24"
@@ -60,13 +73,13 @@
 
                 <CollectionView ItemsSource="{Binding Instructions}">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewmodels:CheckableItem">
                             <Label
-                            Text="{Binding .}"
-                            FontSize="16"
-                            HorizontalTextAlignment="End"
-                            TextColor="Black"
-                            Margin="0,5" />
+                                Text="{Binding Text}"
+                                FontSize="16"
+                                HorizontalTextAlignment="End"
+                                TextColor="Black"
+                                Margin="0,5" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

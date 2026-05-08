@@ -36,11 +36,27 @@ namespace FinalProjectNoaRippel.ViewModels
             GoBackCommand = new Command(async () =>
             {
                 var current = Shell.Current?.CurrentState?.Location?.ToString();
-
+                //עמוד ראשי כלום
                 if (current == null || current.Contains("MainPageView"))
                     return;
+                if (current.Contains("EditRecipePage"))
+                {
+                    bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                        "יציאה מעריכה",
+                        "אם תצא השינוים לא ישמרו",
+                        "כן, צא",
+                        "ביטול"
+                    );
+
+                    if (confirmed)
+                        await Shell.Current.GoToAsync($"///RecipePage?FoodName={EditRecipeViewModel.CurrentFoodName}&CategoryName={FoodListViewModel.CurrentCategory}");
+
+                    return; 
+                }
+                //עמוד מתכון לעמוד כל המתכונים
                 if (current.Contains("RecipePage") || current.Contains("AddRecipePage"))
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodListViewModel.CurrentCategory}");
+                //עמוד כמה מתכונים לעמוד רשימת מאכלים וכך אלה
                 else if (current.Contains("FoodListPage"))
                     await Shell.Current.GoToAsync("///MainPageView");
                 else if (current.Contains("AddFoodPage"))
