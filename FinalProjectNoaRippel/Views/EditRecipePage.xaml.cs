@@ -9,4 +9,5 @@ public partial class EditRecipePage : ContentPage
 		InitializeComponent();
         BindingContext = vm;
     }
+
 }

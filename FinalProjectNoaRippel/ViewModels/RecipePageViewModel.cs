@@ -70,10 +70,17 @@ namespace FinalProjectNoaRippel.ViewModels
                     item.IsChecked = !item.IsChecked;
             });
 
-            AddToShoppingListCommand = new Command<CheckableItem>(item =>
+            AddToShoppingListCommand = new Command<CheckableItem>(async item =>
             {
                 if (item != null)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "בדיקה",
+                        $"לחצת על: {item.Text}",
+                        "אוקי"
+                    );
                     ShoppingListViewModel.AddIngredient(item.Text);
+                }
             });
         }
 

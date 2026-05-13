@@ -1,6 +1,9 @@
 ﻿using FinalProjectNoaRippel.Helper;
 using FinalProjectNoaRippel.Models;
 using FinalProjectNoaRippel.Service;
+using FinalProjectNoaRippel.Service.DBService;
+using FinalProjectNoaRippel.Service.DBService.DBMokup;
+using FinalProjectNoaRippel.Service.DBService.FireBase;
 using FinalProjectNoaRippel.Views;
 using System;
 using System.Windows.Input;
@@ -16,12 +19,9 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _mobile;
         private bool _entryAsPassword = true;
         private string? _passwordIconCode;
-        private readonly IDBService _db;
         private string? _errorMessage;
         private bool _errorVisible;
-
-
-        //((Command) SignUpCommand!).ChangeCanExecute();   בודק אם כפתור הרשמה נלחץ
+        private readonly IAppUserRepository _db;
 
         public string? FirstName
         {
@@ -159,9 +159,11 @@ namespace FinalProjectNoaRippel.ViewModels
             PasswordIconCode = EntryAsPassword ? "eye_close.png" : "eye_open.png";
         }
 
-        public SignUpViewModel(IDBService db)
+        public SignUpViewModel()
         {
-            _db = db;
+            IAuthService authService = new FirebaseAuthService();
+            _db = new FirebaseUsersRepository(authService, null);
+
             _passwordIconCode = "eye_close.png";
             ShowPasswordCommand = new Command(TogglePassword);
             SignUpCommand = new Command(async () => await OnSignUp());
@@ -171,7 +173,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 Application.Current!.Windows[0].Page = signInPage;
             });
 
-            //if Debug Mode
+            // Debug mode
             FirstName = "John";
             LastName = "Doe";
             UserEmail = "user@gmail.com";
@@ -179,7 +181,7 @@ namespace FinalProjectNoaRippel.ViewModels
             UserMobile = "0501234567";
         }
 
-        private async System.Threading.Tasks.Task OnSignUp()
+        private async Task OnSignUp()
         {
             ErrorVisible = false;
 
@@ -192,27 +194,31 @@ namespace FinalProjectNoaRippel.ViewModels
                 return;
             }
 
-            if (_db.EmailExists(UserEmail!))
+            try
             {
-                ErrorMessage = "This email is already registered.";
-                ErrorVisible = true;
-                return;
+                var newUser = new User
+                {
+                    FirstName = FirstName!,
+                    LastName = LastName!,
+                    UserEmail = UserEmail!,
+                    UserPassword = UserPassword!,
+                    UserMobile = UserMobile!,
+                    RegDate = DateTime.Now,
+                    IsAdmin = false
+                };
+
+                // יוצר את המשתמש ב-Firebase Auth וב-Database
+                await _db.CreateAsync(newUser);
+
+                (App.Current as App)!.CurrentUser = newUser;
+                var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
+                Application.Current!.Windows[0].Page = shell;
             }
-
-            var newUser = new User
+            catch (Exception ex)
             {
-                FirstName = FirstName!,
-                LastName = LastName!,
-                UserEmail = UserEmail!,
-                UserPassword = UserPassword!,
-                UserMobile = UserMobile!,
-                RegDate = DateTime.Now
-            };
-            _db.AddUser(newUser);
-
-            (App.Current as App)!.CurrentUser = newUser;
-            var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
-            Application.Current!.Windows[0].Page = shell;
+                ErrorMessage = ex.Message;
+                ErrorVisible = true;
+            }
         }
     }
 }

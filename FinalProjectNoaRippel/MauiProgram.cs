@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using FinalProjectNoaRippel.Service;
+using FinalProjectNoaRippel.Service.DBService.DBMokup;
 using FinalProjectNoaRippel.ViewModels;
 using FinalProjectNoaRippel.Views;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace FinalProjectNoaRippel
                 });
 
             // ── Services (Singleton: one instance for the entire app lifetime) ──────
-            builder.Services.AddSingleton<IDBService, DBMockup>();
+            //builder.Services.AddSingleton<IDBService, FirebaseService>();
 
             // ── Shell (Singleton: only one shell) ────────────────────────────────────
             builder.Services.AddSingleton<AppShell>();

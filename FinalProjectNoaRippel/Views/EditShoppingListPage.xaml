@@ -6,7 +6,11 @@
              x:DataType="viewmodels:EditShoppingListViewModel"
              BackgroundColor="White"
              Title="EditShoppingListPage">
-
+    
+    <NavigationPage.HasBackButton>
+        <x:Boolean>False</x:Boolean>
+    </NavigationPage.HasBackButton>
+    
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,20" Spacing="10">
@@ -14,39 +18,45 @@
                 <Label Text="Edit Shopping List" FontSize="26" FontAttributes="Bold"
                        HorizontalOptions="Center" TextColor="Black" />
 
-                <Border Padding="16" BackgroundColor="#F0F0F0"
+                <Border Padding="16" BackgroundColor="White"
                         StrokeShape="RoundRectangle 8" Stroke="Transparent">
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="Ingredients" FontSize="16"
-                               TextColor="#28396C" FontAttributes="Bold" />
+                        <Label Text="מרכיבים" FontSize="16"
+                               TextColor="#28396C" FontAttributes="Bold" HorizontalTextAlignment="End"  />
 
                         <CollectionView ItemsSource="{Binding Items}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:ShoppingItem">
-                                    <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,4">
-                                        <Label Text="•" FontSize="16" TextColor="#333"
-                                               VerticalOptions="Center" Margin="0,0,8,0" />
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,2">
+
                                         <Entry Grid.Column="1"
                                                Text="{Binding Text}"
-                                               FontSize="16" TextColor="#333" />
+                                               FontSize="16" TextColor="Black"
+                                               HorizontalTextAlignment="End" />
+
                                         <Label Grid.Column="2"
+                                               Text="-" FontSize="24" FontAttributes="Bold" TextColor="#28396C" 
+                                               VerticalOptions="Center" Margin="8,0,0,0" />
+
+                                        <Label Grid.Column="0"
                                                Text="&#xE872;"
                                                FontFamily="MaterialIcons"
                                                FontSize="22" TextColor="Red"
-                                               VerticalOptions="Center" Margin="8,0,0,0">
+                                               VerticalOptions="Center" Margin="0,0,8,0">
                                             <Label.GestureRecognizers>
                                                 <TapGestureRecognizer
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteItemCommand}"
                                                     CommandParameter="{Binding .}" />
                                             </Label.GestureRecognizers>
                                         </Label>
+
                                     </Grid>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
 
-                        <Label Text="+ add ingredient" FontSize="14"
-                               TextColor="#28396C" Margin="8,8,0,0">
+                        <Label Text="+ הוסף רכיב" FontSize="16"
+                               TextColor="#28396C" Margin="8,22,0,0" HorizontalTextAlignment="End" >
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding AddItemCommand}" />
                             </Label.GestureRecognizers>

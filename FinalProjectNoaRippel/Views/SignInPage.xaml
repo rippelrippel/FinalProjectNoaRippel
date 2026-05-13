@@ -1,117 +1,143 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FinalProjectNoaRippel.Views.SignInPage"
-             x:DataType="viewmodels:SignInViewModel"
-             xmlns:views="clr-namespace:FinalProjectNoaRippel.ViewModels"
-             xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
-             BackgroundColor="#28396C"
-             Title="">
+<ContentPage
+    x:Class="FinalProjectNoaRippel.Views.SignInPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
+    xmlns:views="clr-namespace:FinalProjectNoaRippel.ViewModels"
+    Title=""
+    x:DataType="viewmodels:SignInViewModel"
+    BackgroundColor="white">
 
 
-
-
+    <Grid>
         <VerticalStackLayout
-        Padding="35"
-        Spacing="25"
-        VerticalOptions="Start">
+            Padding="35"
+            Spacing="25"
+            VerticalOptions="Start">
 
-        <!--  כותרת  -->
-        <Label
-            Padding="30"
-            FontAttributes="Bold"
-            FontSize="40"
-            Text="כניסה"
-            TextColor="Black"
-            HorizontalOptions="Center"
-            />
-        <Border
-            StrokeShape="RoundRectangle 8"
-            Stroke="Transparent"
-            StrokeThickness="1">
-        </Border>
-            
-        <Border
-            Padding="10"
-            Stroke="#ccc"
-            StrokeShape="RoundRectangle 8"
-            StrokeThickness="1">
-            <Entry
-                FontSize="18"
-                Keyboard="Email"
-                Placeholder="Email"
-                ReturnType="Go"
-                Text="{Binding UserName}"
-                TextColor="Wheat" />
-        </Border>
-
-        <Border
-            Stroke="#ccc"
-            StrokeShape="RoundRectangle 8"
-            StrokeThickness="1">
-            <Grid
-                Padding="10"
-                ColumnDefinitions="*,Auto"
-                VerticalOptions="Center">
-                <Entry
-                    BackgroundColor="Transparent"
-                    FontSize="18"
-                    IsPassword="{Binding EntryAsPassword}"
-                    Placeholder="סיסמה"
-                    Text="{Binding UserPassword}"
-                    TextColor="Wheat"
-                    VerticalOptions="Center" />
-                <ImageButton
-                    Margin="5,0,0,0"
-                    Padding="0"
-                    BackgroundColor="Transparent"
-                    Command="{Binding ShowPasswordCommand}"
-                    HeightRequest="20"
-                    HorizontalOptions="End"
-                    Source="{Binding PassIcon}"
-                    VerticalOptions="Center"
-                    WidthRequest="20" />
-            </Grid>
-        </Border>
-
-        <!--  כפתור כניסה  -->
-        <Button
-            Command="{Binding SignInCommand}"
-            CornerRadius="8"
-            FontSize="18"
-            BackgroundColor ="White"
-            HeightRequest="50"
-            IsEnabled="{Binding IsSignInButtonEnabled}"
-            Text="התחבר"
-            TextColor="#28396C" />
-        <VerticalStackLayout
-            HorizontalOptions="Center"
-            Spacing="10"
-            VerticalOptions="Center">
-
+            <!--  כותרת  -->
             <Label
-                FontSize="20"
-                HorizontalTextAlignment="Center"
-                Text="Don't have an account?"
-                TextColor="Black" />
-
-            <Button
-                BackgroundColor="Transparent"
-                Command="{Binding NavigateToSignUpCommand}"
+                Padding="30"
                 FontAttributes="Bold"
-                FontSize="20"
+                FontSize="40"
                 HorizontalOptions="Center"
-                Text="SignUp"
-                TextColor="Wheat" />
+                Text="כניסה"
+                TextColor="Black" />
+            <Border
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1" />
+
+            <Border
+                Padding="10"
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Entry
+                    FontSize="18"
+                    Keyboard="Email"
+                    Placeholder="Email"
+                    ReturnType="Go"
+                    Text="{Binding UserName}"
+                    TextColor="#28396C" />
+            </Border>
+
+            <Border
+                Stroke="#ccc"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Grid
+                    Padding="10"
+                    ColumnDefinitions="*,Auto"
+                    VerticalOptions="Center">
+                    <Entry
+                        BackgroundColor="Transparent"
+                        FontSize="18"
+                        IsPassword="{Binding EntryAsPassword}"
+                        Placeholder="סיסמה"
+                        Text="{Binding UserPassword}"
+                        TextColor="#28396C"
+                        VerticalOptions="Center" />
+                    <ImageButton
+                        Margin="5,0,0,0"
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        Command="{Binding ShowPasswordCommand}"
+                        HeightRequest="20"
+                        HorizontalOptions="End"
+                        Source="{Binding PassIcon}"
+                        VerticalOptions="Center"
+                        WidthRequest="20" />
+                </Grid>
+            </Border>
+
+            <!--  כפתור כניסה  -->
+            <Button
+                BackgroundColor="#28396C"
+                Command="{Binding SignInCommand}"
+                FontSize="18"
+                HeightRequest="50"
+                IsEnabled="{Binding IsSignInButtonEnabled}"
+                Text="התחבר"
+                TextColor="white" 
+                FontAttributes="Bold" />
+            <VerticalStackLayout
+                HorizontalOptions="Center"
+            
+                Spacing="10"
+                VerticalOptions="Center">
+
+                <Label
+                    FontSize="20"
+                    HorizontalTextAlignment="Center"
+                    Text="Don't have an account?"
+                    TextColor="Black" />
+
+                <Button
+                    BackgroundColor="Transparent"
+                    Command="{Binding NavigateToSignUpCommand}"
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    HorizontalOptions="Center"
+                    Text="SignUp"
+                    TextColor="#28396C" />
+            </VerticalStackLayout>
+
+            <!--  שגיאה  -->
+            <Label
+                FontSize="14"
+                HorizontalTextAlignment="Center"
+                IsVisible="{Binding SignInMessageVisible}"
+                Text="{Binding LoginMessage}"
+                TextColor="Red" />
         </VerticalStackLayout>
 
-        <!--  שגיאה  -->
-        <Label
-            FontSize="14"
-            HorizontalTextAlignment="Center"
-            IsVisible="{Binding SignInMessageVisible}"
-            Text="{Binding LoginMessage}"
-            TextColor="Red" />
-    </VerticalStackLayout>
+
+        <!--  מסך טעינה  -->
+        <Grid
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Fill">
+
+            <!--  מסך טעינה  -->
+            <Grid
+                HorizontalOptions="Fill"
+                IsVisible="{Binding IsBusy}"
+                VerticalOptions="Fill">
+
+                <BoxView
+                    BackgroundColor="LightBlue"
+                    HorizontalOptions="Fill"
+                    Opacity="0.7"
+                    VerticalOptions="Fill" />
+
+                <ActivityIndicator
+                    IsRunning="True"
+                    WidthRequest="100"
+                    Color="#28396C" />
+            </Grid>
+        </Grid>
+    </Grid>
 
 </ContentPage>

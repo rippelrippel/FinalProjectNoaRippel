@@ -82,6 +82,12 @@
     ContentTemplate="{DataTemplate views:ShoppingListPage}"
     Route="ShoppingListPage" />
 
+    <ShellContent
+    Title="EditShoppingList"
+    ContentTemplate="{DataTemplate views:EditShoppingListPage}"
+    Route="EditShoppingListPage"
+    Shell.FlyoutItemIsVisible="False" />
+    
     <!-- only admin -->
     <ShellContent
         Title="Admin"

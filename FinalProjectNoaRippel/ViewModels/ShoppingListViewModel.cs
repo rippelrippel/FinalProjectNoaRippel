@@ -29,6 +29,12 @@ namespace FinalProjectNoaRippel.ViewModels
 
             GoToEditCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("EditShoppingListPage"));
+
+            AddToListCommand = new Command<string>(text =>
+            {
+                if (!string.IsNullOrWhiteSpace(text))
+                    AddIngredient(text);
+            });
         }
         public static void AddIngredient(string text)
         {

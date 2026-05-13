@@ -5,18 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalProjectNoaRippel.Service
+namespace FinalProjectNoaRippel.Service.DBService.DBMokup
 {
-    public interface IDBService
-    {
-        List<User> Users { get; }
-        bool IsExist(string uEmail, string uPass);
-        bool EmailExists(string uEmail);
-        void AddUser(User user);
-        User GetUserByEmail(string uEmail);
-        void RemoveUser(User user);
-        void UpdateUser(User user);
-    }
 
     internal class DBMockup : IDBService
     {
@@ -25,10 +15,10 @@ namespace FinalProjectNoaRippel.Service
         public DBMockup()
         {
             _users = new List<User>();
-            _users.Add(new User { Id = 1, FirstName = "Noa", LastName = "Rippel", UserEmail = "Rip@gmail.com", UserPassword = "rip", IsAdmin = false, UserMobile = "0501234567" });
-            _users.Add(new User { Id = 3, FirstName = "sim", LastName = "rit", UserEmail = "rit@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545506265" });
-            _users.Add(new User { Id = 4, FirstName = "ban", LastName = "ana", UserEmail = "ban@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545520686" });
-            _users.Add(new User { Id = 2, FirstName = "admin", LastName = "admin", UserEmail = "admin@gmail.com", UserPassword = "admin", IsAdmin = true, UserMobile = "0509876543" });
+            _users.Add(new User { Id = "1", FirstName = "Noa", LastName = "Rippel", UserEmail = "Rip@gmail.com", UserPassword = "rip", IsAdmin = false, UserMobile = "0501234567" });
+            _users.Add(new User { Id = "3", FirstName = "sim", LastName = "rit", UserEmail = "rit@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545506265" });
+            _users.Add(new User { Id = "4", FirstName = "ban", LastName = "ana", UserEmail = "ban@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545520686" });
+            _users.Add(new User { Id = "2", FirstName = "admin", LastName = "admin", UserEmail = "admin@gmail.com", UserPassword = "admin", IsAdmin = true, UserMobile = "0509876543" });
         }
         public bool IsExist(string uEmail, string uPass)
         {
@@ -46,7 +36,7 @@ namespace FinalProjectNoaRippel.Service
         {
             if (user != null)
             {
-                user.Id = _users.Count > 0 ? _users.Max(u => u.Id) + 1 : 1;
+                user.Id = _users.Count > 0? (int.Parse(_users.Max(u => u.Id)!) + 1).ToString(): "1";
                 user.RegDate = DateTime.Now;
                 _users.Add(user);
             }

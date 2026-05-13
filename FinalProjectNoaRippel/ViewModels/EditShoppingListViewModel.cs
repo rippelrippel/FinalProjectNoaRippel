@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
-    internal class EditShoppingListViewModel : ViewModelBase
+    public class EditShoppingListViewModel : ViewModelBase
     {
         public ObservableCollection<ShoppingItem> Items { get; set; } = new();
         public ICommand DeleteItemCommand { get; }

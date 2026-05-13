@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928191870929",
+    "project_id": "finalprojectnoarippel",
+    "storage_bucket": "finalprojectnoarippel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928191870929:android:b055c0f64468c6a9abd2f0",
+        "android_client_info": {
+          "package_name": "com.companyname.finalprojectnoarippel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwWFg6DxPrcRIvJwS29RV_m3RvwgjICsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
