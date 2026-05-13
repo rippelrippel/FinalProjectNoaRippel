@@ -10,4 +10,11 @@ public partial class ShoppingListPage : ContentPage
         BindingContext = vm;
 
     }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        // ???? ???? ?? ?????? ?-Firebase
+        if (BindingContext is ShoppingListViewModel vm)
+            await vm.ReloadItemsAsync();
+    }
 }

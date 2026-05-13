@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -74,12 +76,21 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 if (item != null)
                 {
+                    // יוצר חיבור ישיר לFirebase במקום דרך ה-ViewModel
+                    var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+                    var db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
+
+                    await db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("shoppingList")
+                    .PostAsync(new { Text = item.Text });
+
                     await Application.Current!.MainPage!.DisplayAlert(
-                        "בדיקה",
-                        $"לחצת על: {item.Text}",
+                        "נוסף!",
+                        $"{item.Text} נוסף לרשימת הקניות",
                         "אוקי"
                     );
-                    ShoppingListViewModel.AddIngredient(item.Text);
                 }
             });
         }
