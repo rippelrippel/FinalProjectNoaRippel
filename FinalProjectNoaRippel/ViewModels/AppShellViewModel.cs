@@ -67,8 +67,11 @@ namespace FinalProjectNoaRippel.ViewModels
                     await Shell.Current.GoToAsync("///MainPageView");
                 else if (current.Contains("UsersListPage"))
                     await Shell.Current.GoToAsync("///AdminPage");
+                else if (current.Contains("EditShoppingListPage"))
+                    await Shell.Current.GoToAsync("///ShoppingListPage");
                 else
                     await Shell.Current.GoToAsync("///MainPageView");
+
             });
         }
 

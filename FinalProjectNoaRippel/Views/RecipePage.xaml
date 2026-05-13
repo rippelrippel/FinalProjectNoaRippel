@@ -34,20 +34,37 @@
                 <CollectionView ItemsSource="{Binding Ingredients}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:CheckableItem">
-                            <Grid ColumnDefinitions="*,Auto" Padding="5">
-                            <Label
-                                Text="{Binding Text}"
-                                FontSize="16"
-                                HorizontalTextAlignment="End"
-                                VerticalOptions="Center"
-                                TextColor="Black"
-                                TextDecorations="{Binding IsChecked, Converter={StaticResource BoolToStrikethroughConverter}}">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleIngredientCommand}" CommandParameter="{Binding .}" />
-                                </Label.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto,Auto" Padding="5">
+                                <Label
+                                    Text="{Binding Text}"
+                                    FontSize="16"
+                                    HorizontalTextAlignment="End"
+                                    VerticalOptions="Center"
+                                    TextColor="Black"
+                                    TextDecorations="{Binding IsChecked, Converter={StaticResource BoolToStrikethroughConverter}}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleIngredientCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Label.GestureRecognizers>
                                 </Label>
-                                
-                                <Border
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="+"
+                                    FontSize="22"
+                                    TextColor="#28396C"
+                                    VerticalOptions="Center"
+                                    Margin="0,0,8,0">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddToShoppingListCommand}"
+                                            CommandParameter="{Binding .}" />       
+                                    </Label.GestureRecognizers>
+                                </Label>
+
+
+                                    <Border
                                 Grid.Column="1"
                                 WidthRequest="24"
                                 HeightRequest="24"

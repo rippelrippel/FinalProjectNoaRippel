@@ -39,6 +39,7 @@ namespace FinalProjectNoaRippel.ViewModels
         public ICommand DeleteRecipeCommand { get; }
         public ICommand GoToEditCommand { get; }
         public ICommand ToggleIngredientCommand { get; }
+        public ICommand AddToShoppingListCommand { get; }
 
         public RecipePageViewModel()
         {
@@ -62,10 +63,17 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
             });
+
             ToggleIngredientCommand = new Command<CheckableItem>(item =>
             {
                 if (item != null)
                     item.IsChecked = !item.IsChecked;
+            });
+
+            AddToShoppingListCommand = new Command<CheckableItem>(item =>
+            {
+                if (item != null)
+                    ShoppingListViewModel.AddIngredient(item.Text);
             });
         }
 

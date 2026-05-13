@@ -39,6 +39,8 @@ namespace FinalProjectNoaRippel
             builder.Services.AddTransient<AddFoodPage>();
             builder.Services.AddTransient<AddRecipePage>();
             builder.Services.AddTransient<EditRecipePage>();
+            builder.Services.AddTransient<ShoppingListPage>();
+            builder.Services.AddTransient<EditShoppingListPage>();
 
             // MainPage is registered as Singleton so the Shell can reuse it
             builder.Services.AddSingleton<MainPageView>();
@@ -55,6 +57,8 @@ namespace FinalProjectNoaRippel
             builder.Services.AddTransient<AddFoodViewModel>();
             builder.Services.AddTransient<AddRecipeViewModel>();
             builder.Services.AddTransient<EditRecipeViewModel>();
+            builder.Services.AddTransient<ShoppingListViewModel>();
+            builder.Services.AddTransient<EditShoppingListViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

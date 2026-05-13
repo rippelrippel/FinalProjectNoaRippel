@@ -75,7 +75,13 @@
     ContentTemplate="{DataTemplate views:EditRecipePage}"
     Route="EditRecipePage"
     Shell.FlyoutItemIsVisible="False" />
-    
+
+    <ShellContent
+    Title="Shopping List"
+    Icon="cart.png"
+    ContentTemplate="{DataTemplate views:ShoppingListPage}"
+    Route="ShoppingListPage" />
+
     <!-- only admin -->
     <ShellContent
         Title="Admin"
