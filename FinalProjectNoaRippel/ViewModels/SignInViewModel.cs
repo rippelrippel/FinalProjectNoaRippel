@@ -98,10 +98,13 @@ namespace FinalProjectNoaRippel.ViewModels
                 //Go to the MainPage
                 IsBusy = false;
 
+                (App.Current as App)!.CurrentUser = user;
+
+                var shellVm = IPlatformApplication.Current!.Services.GetService<AppShellViewModel>();
+                shellVm?.NotifyIsAdminChanged();
+
                 var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
                 Application.Current!.Windows[0].Page = shell;
-
-
             }
             catch (Exception ex)
             {
@@ -110,31 +113,6 @@ namespace FinalProjectNoaRippel.ViewModels
                 SignInMessageVisible = true;
             }
 
-            //try
-            //{
-            //    if (_db is FirebaseService firebaseService)
-            //    {
-            //        var user = await firebaseService.SignInAndGetUserAsync(UserName!, UserPassword!);
-            //        if (user != null)
-            //        {
-            //            (App.Current as App)!.CurrentUser = user;
-            //            var shellVm = IPlatformApplication.Current!.Services.GetService<AppShellViewModel>();
-            //            shellVm?.NotifyIsAdminChanged();
-            //            var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
-            //            Application.Current!.Windows[0].Page = shell;
-            //        }
-            //        else
-            //        {
-            //            LoginMessage = "Email or password is incorrect.";
-            //            SignInMessageVisible = true;
-            //        }
-            //    }
-            //}
-            //catch
-            //{
-            //    LoginMessage = "Email or password is incorrect.";
-            //    SignInMessageVisible = true;
-            //}
         }
     }
 }

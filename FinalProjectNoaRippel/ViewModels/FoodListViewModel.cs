@@ -1,17 +1,25 @@
-﻿using System;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static FinalProjectNoaRippel.ViewModels.MainPageViewModel;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class FoodListViewModel : ViewModelBase
     {
+        private readonly FirebaseClient _db;
+        // UID של המשתמש המחובר
+        private readonly string _uid;
+
         private string? _categoryName;
+        private string? _categoryKey; // מפתח הקטגוריה ב-Firebase
 
         public static string? CurrentCategory { get; private set; }
 
@@ -21,9 +29,10 @@ namespace FinalProjectNoaRippel.ViewModels
             set
             {
                 _categoryName = value;
-                CurrentCategory = value; // שומר את הקטגוריה הנוכחית
+                CurrentCategory = value;
                 OnPropertyChanged();
-                LoadFoods(value!);
+                // טוען את המתכונים מ-Firebase כשהקטגוריה משתנה
+                _ = LoadFoodsAsync(value!);
             }
         }
 
@@ -33,13 +42,17 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public FoodListViewModel()
         {
+            _uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+            _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
+
             SelectFoodCommand = new Command<FoodItem>(async (food) =>
             {
                 if (food.IsAddButton)
                     await Shell.Current.GoToAsync($"///AddRecipePage?FoodName={_categoryName}");
                 else
-                    await Shell.Current.GoToAsync($"///RecipePage?FoodName={food.Name}");
+                    await Shell.Current.GoToAsync($"///RecipePage?FoodName={food.Name}&CategoryName={_categoryName}");
             });
+
             DeleteCategoryCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
@@ -51,93 +64,134 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 if (confirmed)
                 {
-                    _foodData.Remove(_categoryName!);
                     var mainVm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
-                    mainVm?.RemoveCategory(_categoryName!);
+                    if (mainVm != null)
+                        await mainVm.RemoveCategoryAsync(_categoryName!);
 
                     await Shell.Current.GoToAsync("///MainPageView");
                 }
             });
         }
-
-        private static readonly Dictionary<string, List<FoodItem>> _foodData = new()
+        private async Task LoadFoodsAsync(string categoryName)
         {
-            ["cookies"] = new()
+            try
             {
-                new FoodItem { Name = "Chocolate Chip", ImageSource = "cookies.png" },
-                new FoodItem { Name = "Oatmeal", ImageSource = "cookies.png" },
-                new FoodItem { IsAddButton = true }
-            },
-            ["cinnamon rolls"] = new()
+                FoodItems.Clear();
+
+                // מביא את המתכונים מ-Firebase
+                // הנתיב: users/{uid}/categories/{categoryKey}/recipes
+                // קודם צריך למצוא את ה-Key של הקטגוריה
+                var categories = await _db
+                    .Child("users")
+                    .Child(_uid)
+                    .Child("categories")
+                    .OnceAsync<FoodCategoryData>();
+
+                // מוצא את הקטגוריה לפי שם
+                var category = categories.FirstOrDefault(c => c.Object.Name == categoryName);
+                if (category == null)
+                {
+                    // קטגוריה לא נמצאה — מוסיף רק כפתור +
+                    FoodItems.Add(new FoodItem { IsAddButton = true });
+                    return;
+                }
+
+                _categoryKey = category.Key;
+
+                // מביא את המתכונים של הקטגוריה
+                var recipes = await _db
+                    .Child("users")
+                    .Child(_uid)
+                    .Child("categories")
+                    .Child(_categoryKey)
+                    .Child("recipes")
+                    .OnceAsync<FoodItemData>();
+
+                // מוסיף את המתכונים לרשימה
+                foreach (var recipe in recipes)
+                    FoodItems.Add(new FoodItem
+                    {
+                        Key = recipe.Key,
+                        Name = recipe.Object.Name,
+                        ImageSource = recipe.Object.ImageSource
+                    });
+
+                // כפתור + תמיד בסוף
+                FoodItems.Add(new FoodItem { IsAddButton = true });
+            }
+            catch
             {
-                new FoodItem { Name = "Classic Roll", ImageSource = "cinnamonrolls.png" },
-                new FoodItem { Name = "Cream Roll", ImageSource = "cinnamonrolls.png" },
-                new FoodItem { IsAddButton = true }
-            },
-            ["chocolate cake"] = new()
-            {
-                new FoodItem { Name = "Fudge Cake", ImageSource = "chocolatecake.png" },
-                new FoodItem { Name = "Lava Cake", ImageSource = "chocolatecake.png" },
-                new FoodItem { IsAddButton = true }
-            },
-            ["cupcake"] = new()
-            {
-                new FoodItem { Name = "Vanilla Cupcake", ImageSource = "cupcake.png" },
-                new FoodItem { Name = "Chocolate Cupcake", ImageSource = "cupcake.png" },
-                new FoodItem { IsAddButton = true }
-            },
-            ["pasta"] = new()
-            {
-                new FoodItem { Name = "Spaghetti", ImageSource = "pasta.png" },
-                new FoodItem { Name = "Penne", ImageSource = "pasta.png" },
-                new FoodItem { IsAddButton = true }
-            },
-        };
+                // אם נכשל — מוסיף לפחות כפתור +
+                FoodItems.Add(new FoodItem { IsAddButton = true });
+            }
+        }
+        public async Task AddFoodAsync(FoodItem food)
+        {
+            if (_categoryKey == null) return;
+
+            var result = await _db
+                .Child("users")
+                .Child(_uid)
+                .Child("categories")
+                .Child(_categoryKey)
+                .Child("recipes")
+                .PostAsync(new FoodItemData
+                {
+                    Name = food.Name,
+                    ImageSource = food.ImageSource
+                });
+
+            food.Key = result.Key;
+            // מוסיף לפני כפתור +
+            FoodItems.Insert(FoodItems.Count - 1, food);
+        }
+        public async Task RemoveFoodAsync(string foodName)
+        {
+            if (_categoryKey == null) return;
+
+            var item = FoodItems.FirstOrDefault(f => f.Name == foodName);
+            if (item?.Key == null) return;
+
+            await _db
+                .Child("users")
+                .Child(_uid)
+                .Child("categories")
+                .Child(_categoryKey)
+                .Child("recipes")
+                .Child(item.Key)
+                .DeleteAsync();
+
+            FoodItems.Remove(item);
+        }
 
         public static void AddFoodToCategory(string category, FoodItem food)
         {
-            if (_foodData.ContainsKey(category))
-            {
-                var list = _foodData[category];
-                list.Insert(list.Count - 1, food);
-            }
-
+            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
+            _ = vm?.AddFoodAsync(food);
         }
 
-        private void LoadFoods(string category)
-        {
-            FoodItems.Clear();
-            if (_foodData.TryGetValue(category, out var items))
-                foreach (var item in items)
-                    FoodItems.Add(item);
-        }
         public static void RemoveFoodFromCategory(string foodName)
         {
-            foreach (var category in _foodData.Values)
-            {
-                var item = category.FirstOrDefault(f => f.Name == foodName);
-                if (item != null)
-                {
-                    category.Remove(item);
-                    return;
-                }
-            }
-        }
-        public static void AddNewCategory(string categoryName)
-        {
-            if (!_foodData.ContainsKey(categoryName))
-            {
-                _foodData[categoryName] = new List<FoodItem>
-        {
-            new FoodItem { IsAddButton = true }
-        };
-            }
+            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
+            _ = vm?.RemoveFoodAsync(foodName);
         }
 
+        public static string? GetCurrentCategoryKey()
+        {
+            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
+            return vm?._categoryKey;
+        }
     }
+    public class FoodItemData
+    {
+        public string? Name { get; set; }
+        public string? ImageSource { get; set; }
+    }
+
 
     public class FoodItem
     {
+        public string? Key { get; set; }         // מזהה ייחודי ב-Firebase
         public string? Name { get; set; }
         public string? ImageSource { get; set; }
         public bool IsAddButton { get; set; } = false;

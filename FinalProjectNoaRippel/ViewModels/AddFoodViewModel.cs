@@ -65,10 +65,10 @@ namespace FinalProjectNoaRippel.ViewModels
                     ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
 
-                FoodListViewModel.AddNewCategory(FoodName!);
-
                 var vm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
-                vm?.AddCategory(newCategory);
+                if (vm != null)
+                    await vm.AddCategoryAsync(newCategory);
+
                 await Shell.Current.GoToAsync("///MainPageView");
             });
         }

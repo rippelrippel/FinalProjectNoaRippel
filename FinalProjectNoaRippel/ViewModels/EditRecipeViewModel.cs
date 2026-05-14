@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,6 +18,9 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _foodName;
         private string? _categoryName;
         private string? _recipeName;
+        private readonly FirebaseClient _db;
+        private string? _categoryKey;
+
         public static string? CurrentFoodName { get; private set; }
 
         // שם המתכון שמגיע מהניווט - ברגע שמגיע טוען את המתכון
@@ -27,7 +32,8 @@ namespace FinalProjectNoaRippel.ViewModels
                 _foodName = value;
                 CurrentFoodName = value;
                 OnPropertyChanged();
-                LoadRecipe(value!);
+                if (!string.IsNullOrEmpty(_categoryName))
+                    _ = LoadRecipeAsync(value!);
             }
         }
 
@@ -35,7 +41,13 @@ namespace FinalProjectNoaRippel.ViewModels
         public string? CategoryName
         {
             get => _categoryName;
-            set { _categoryName = value; OnPropertyChanged(); }
+            set 
+            {
+                _categoryName = value; 
+                OnPropertyChanged(); 
+                if (!string.IsNullOrEmpty(_foodName))
+                    _ = LoadRecipeAsync(_foodName!);
+            }
         }
 
         // שם המתכון שהמשתמש יכול לערוך
@@ -56,6 +68,9 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public EditRecipeViewModel()
         {
+            _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
+
+
             // מוסיף שורה ריקה חדשה לרשימת המרכיבים
             AddIngredientCommand = new Command(() => Ingredients.Add(new IngredientItem()));
 
@@ -68,35 +83,95 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (string.IsNullOrWhiteSpace(RecipeName) || string.IsNullOrWhiteSpace(FoodName))
                     return;
 
-                // שומר את המתכון המעודכן
-                RecipePageViewModel.AddRecipe(
-                    FoodName!,
-                    RecipeName!,
-                    Ingredients.Select(i => i.Text).ToList(),
-                    Instructions.Select(i => i.Text).ToList()
+                var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+
+                if (_categoryKey == null)
+                {
+                    var categories = await _db
+                        .Child("users")
+                        .Child(uid)
+                        .Child("categories")
+                        .OnceAsync<FoodCategoryData>();
+
+                    var cat = categories.FirstOrDefault(c => c.Object.Name == _categoryName);
+                    if (cat == null) return;
+                    _categoryKey = cat.Key;
+                }
+
+                await _db
+                   .Child("users")
+                   .Child(uid)
+                   .Child("categories")
+                   .Child(_categoryKey)
+                   .Child("recipeDetails")
+                   .Child(_foodName!)
+                   .PutAsync(new
+                   {
+                       Name = RecipeName,
+                       Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                       Instructions = Instructions.Select(i => i.Text).ToList()
+                   });
+                await Shell.Current.GoToAsync($"///RecipePage?FoodName={FoodName}&CategoryName={CategoryName}");
+            });
+
+            GoBackCommand = new Command(async () =>
+            {
+                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                    "יציאה מעריכה",
+                    "אם תצא השינויים לא יישמרו",
+                    "כן, צא",
+                    "ביטול"
                 );
 
-                // חוזר לדף המתכון עם הנתונים המעודכנים
-                await Shell.Current.GoToAsync($"///RecipePage?FoodName={FoodName}&CategoryName={CategoryName}");
+                if (confirmed)
+                    await Shell.Current.GoToAsync($"///RecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
             });
 
         }
 
-        // טוען את נתוני המתכון הקיים לתוך השדות לעריכה
-        private void LoadRecipe(string foodName)
+        // טוען את נתוני המתכון הקיים 
+        private async Task LoadRecipeAsync(string foodName)
         {
-            var recipe = RecipePageViewModel.GetRecipe(foodName);
-            if (recipe == null) return;
+            try
+            {
+                var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
 
-            RecipeName = recipe.Value.name;
+                // מוצא את הקטגוריה
+                var categories = await _db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .OnceAsync<FoodCategoryData>();
 
-            Ingredients.Clear();
-            foreach (var i in recipe.Value.ingredients)
-                Ingredients.Add(new IngredientItem { Text = i });
+                var category = categories.FirstOrDefault(c => c.Object.Name == _categoryName);
+                if (category == null) return;
+                _categoryKey = category.Key;
 
-            Instructions.Clear();
-            foreach (var i in recipe.Value.instructions)
-                Instructions.Add(new IngredientItem { Text = i });
+                // טוען את פרטי המתכון
+                var details = await _db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(_categoryKey)
+                    .Child("recipeDetails")
+                    .Child(foodName)
+                    .OnceSingleAsync<RecipeDetails>();
+
+                if (details == null) return;
+
+                RecipeName = details.Name ?? foodName;
+
+                Ingredients.Clear();
+                foreach (var i in details.Ingredients ?? new())
+                    Ingredients.Add(new IngredientItem { Text = i });
+
+                Instructions.Clear();
+                foreach (var i in details.Instructions ?? new())
+                    Instructions.Add(new IngredientItem { Text = i });
+            }
+            catch { }
+
         }
+
     }
 }

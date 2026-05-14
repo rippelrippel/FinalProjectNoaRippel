@@ -10,10 +10,10 @@ public partial class MainPageView : ContentPage
         BindingContext = vm;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (BindingContext is MainPageViewModel vm)
-            vm.RefreshWelcome();
+            await vm.LoadCategoriesAsync();
     }
 }

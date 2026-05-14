@@ -82,6 +82,10 @@ namespace FinalProjectNoaRippel.ViewModels
 
         private void Logout()
         {
+            //מאפס הכל
+            var mainVm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
+            mainVm?.FoodCategories.Clear();
+
             (App.Current as App)!.CurrentUser = null;
             OnPropertyChanged(nameof(IsAdmin));
             Application.Current!.Windows[0].Page = new NavigationPage(_signInPage);

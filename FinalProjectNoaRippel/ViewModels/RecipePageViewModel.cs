@@ -16,6 +16,10 @@ namespace FinalProjectNoaRippel.ViewModels
     {
         private string? _foodName;
         private string? _categoryName;
+
+        private readonly FirebaseClient _db;
+        private string? _recipeKey;     // מפתח המתכון ב-Firebase
+        private string? _categoryKey;   // מפתח הקטגוריה ב-Firebase
         public string FoodName
         {
             get => _foodName;
@@ -23,20 +27,23 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 _foodName = value;
                 OnPropertyChanged();
-                LoadRecipe(value);
+                // אם גם CategoryName כבר קיים - טוען את המתכון
+                if (!string.IsNullOrEmpty(_categoryName))
+                    _ = LoadRecipeAsync(value);
             }
         }
 
         public string CategoryName
         {
             get => _categoryName;
-            set { _categoryName = value; OnPropertyChanged(); }
-        }
-        public static (string name, List<string> ingredients, List<string> instructions)? GetRecipe(string foodName)
-        {
-            if (_recipes.TryGetValue(foodName, out var recipe))
-                return recipe;
-            return null;
+            set
+            {
+                _categoryName = value;
+                OnPropertyChanged();
+                // אם גם FoodName כבר קיים - טוען את המתכון
+                if (!string.IsNullOrEmpty(_foodName))
+                    _ = LoadRecipeAsync(_foodName);
+            }
         }
         public ICommand DeleteRecipeCommand { get; }
         public ICommand GoToEditCommand { get; }
@@ -45,6 +52,8 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public RecipePageViewModel()
         {
+            _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
+
             DeleteRecipeCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
@@ -56,11 +65,35 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 if (confirmed)
                 {
-                    _recipes.Remove(_foodName!);
-                    FoodListViewModel.RemoveFoodFromCategory(_foodName!);
-                    await Shell.Current.GoToAsync("..");
+                    var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+
+                    // מוחק את המתכון מ-Firebase
+                    if (_categoryKey != null && _recipeKey != null)
+                    {
+                        await _db
+                            .Child("users")
+                            .Child(uid)
+                            .Child("categories")
+                            .Child(_categoryKey)
+                            .Child("recipes")
+                            .Child(_recipeKey)
+                            .DeleteAsync();
+
+                        // מוחק גם את פרטי המתכון
+                        await _db
+                            .Child("users")
+                            .Child(uid)
+                            .Child("categories")
+                            .Child(_categoryKey)
+                            .Child("recipeDetails")
+                            .Child(_foodName!)
+                            .DeleteAsync();
+                    }
+
+                    await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={_categoryName}");
                 }
             });
+
             GoToEditCommand = new Command(async () =>
             {
                 await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
@@ -76,15 +109,12 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 if (item != null)
                 {
-                    // יוצר חיבור ישיר לFirebase במקום דרך ה-ViewModel
                     var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
-                    var db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
-
-                    await db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("shoppingList")
-                    .PostAsync(new { Text = item.Text });
+                    await _db
+                        .Child("users")
+                        .Child(uid)
+                        .Child("shoppingList")
+                        .PostAsync(new { Text = item.Text });
 
                     await Application.Current!.MainPage!.DisplayAlert(
                         "נוסף!",
@@ -98,42 +128,79 @@ namespace FinalProjectNoaRippel.ViewModels
         public string RecipeName { get; set; } = "";
         public ObservableCollection<CheckableItem> Ingredients { get; set; } = new();
         public ObservableCollection<CheckableItem> Instructions { get; set; } = new();
-
-        private static readonly Dictionary<string, (string name, List<string> ingredients, List<string> instructions)> _recipes = new()
+        // טוען את המתכון מ-Firebase
+        private async Task LoadRecipeAsync(string foodName)
         {
-            ["Chocolate Chip"] = (
-        "Chocolate Chip Cookies",
-        new() { "2 כוסות קמח", "1 כוס שוקולד צ'יפס", "100 גרם חמאה" },
-        new() { "1. מחממים תנור ל-180", "2. מערבבים הכל", "3. אופים 12 דקות" }
-    ),
-            ["Fudge Cake"] = (
-        "Fudge Cake",
-        new() { "2 כוסות קמח", "1 כוס קקאו", "3 ביצים", "200 גרם חמאה" },
-        new() { "1. מחממים תנור ל-175", "2. מערבבים חמאה וסוכר", "3. מוסיפים ביצים וקמח", "4. אופים 35 דקות" }
-    ),
-        };
-
-        private void LoadRecipe(string foodName)
-        {
-            Ingredients.Clear();
-            Instructions.Clear();
-
-            if (_recipes.TryGetValue(foodName, out var recipe))
+            try
             {
-                RecipeName = recipe.name;
-                foreach (var i in recipe.ingredients)
-                    Ingredients.Add(new CheckableItem { Text = i });
-                foreach (var i in recipe.instructions)
-                    Instructions.Add(new CheckableItem { Text = i });
+                var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+
+                // מוצא את הקטגוריה לפי שם
+                var categories = await _db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .OnceAsync<FoodCategoryData>();
+
+                var category = categories.FirstOrDefault(c => c.Object.Name == _categoryName);
+                if (category == null) return;
+                _categoryKey = category.Key;
+
+                // מוצא את המתכון לפי שם
+                var recipes = await _db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(_categoryKey)
+                    .Child("recipes")
+                    .OnceAsync<FoodItemData>();
+
+                var recipe = recipes.FirstOrDefault(r => r.Object.Name == foodName);
+                if (recipe != null)
+                    _recipeKey = recipe.Key;
+
+                // טוען את פרטי המתכון
+                var details = await _db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(_categoryKey)
+                    .Child("recipeDetails")
+                    .Child(foodName)
+                    .OnceSingleAsync<RecipeDetails>();
+
+                Ingredients.Clear();
+                Instructions.Clear();
+
+                if (details != null)
+                {
+                    RecipeName = details.Name ?? foodName;
+                    foreach (var i in details.Ingredients ?? new())
+                        Ingredients.Add(new CheckableItem { Text = i });
+                    foreach (var i in details.Instructions ?? new())
+                        Instructions.Add(new CheckableItem { Text = i });
+                }
+                else
+                {
+                    // אם אין פרטים - מציג רק את השם
+                    RecipeName = foodName;
+                }
+
+                OnPropertyChanged(nameof(RecipeName));
             }
-
-            OnPropertyChanged(nameof(RecipeName));
+            catch { }
         }
+        public static void AddRecipe(string foodName, string recipeName, List<string> ingredients, List<string> instructions, string? image = null) { }
 
-        public static void AddRecipe(string foodName, string recipeName, List<string> ingredients, List<string> instructions, string? image = null)
-        {
-            _recipes[foodName] = (recipeName, ingredients, instructions);
-        }
+        // נשמר לתאימות - עדיין נקרא מ-EditRecipeViewModel
+        public static (string name, List<string> ingredients, List<string> instructions)? GetRecipe(string foodName) => null;
+    }
+    // מבנה פרטי המתכון שנשמר ב-Firebase
+    public class RecipeDetails
+    {
+        public string? Name { get; set; }
+        public List<string>? Ingredients { get; set; }
+        public List<string>? Instructions { get; set; }
     }
 
     public class CheckableItem : ViewModelBase
@@ -147,3 +214,4 @@ namespace FinalProjectNoaRippel.ViewModels
         }
     }
 }
+

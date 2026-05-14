@@ -1,4 +1,6 @@
 ﻿using FinalProjectNoaRippel.ViewModels;
+using Firebase.Database;
+using Firebase.Database.Query;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -88,16 +90,46 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (string.IsNullOrWhiteSpace(RecipeName) || string.IsNullOrWhiteSpace(FoodName))
                     return;
 
-                // שומר את המתכון עם התמונה
-                RecipePageViewModel.AddRecipe(RecipeName!, RecipeName!,Ingredients.Select(i => i.Text).ToList(),Instructions.Select(i => i.Text).ToList(),SelectedImage);
+                var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
+                var db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
-                // מוסיף את המאכל לרשימה עם התמונה
-                var newFood = new FoodItem
-                {
-                    Name = RecipeName,
-                    ImageSource = SelectedImage ?? "nophoto.jpeg"
-                };
-                FoodListViewModel.AddFoodToCategory(FoodName!, newFood);
+                // מחפש ומוצא את הקטגוריה הנכונה לפי המפתח
+                var categories = await db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .OnceAsync<FoodCategoryData>();
+
+                var category = categories.FirstOrDefault(c => c.Object.Name == FoodName);
+                if (category == null) return;
+
+                //שומר בממסד נתונים
+                var recipeResult = await db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(category.Key)
+                    .Child("recipes")
+                    .PostAsync(new
+                    {
+                        Name = RecipeName,
+                        ImageSource = SelectedImage ?? "nophoto.jpeg"
+                    });
+
+                // שומר את המרכיבים וההוראות
+                await db
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(category.Key)
+                    .Child("recipeDetails")
+                    .Child(RecipeName!)
+                    .PutAsync(new
+                    {
+                        Name = RecipeName,
+                        Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                        Instructions = Instructions.Select(i => i.Text).ToList()
+                    });
 
                 await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
             });
