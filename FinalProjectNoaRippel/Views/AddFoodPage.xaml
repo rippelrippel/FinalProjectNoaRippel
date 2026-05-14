@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FinalProjectNoaRippel.Views.AddFoodPage"
-             BackgroundColor="White"
-             xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
-             x:DataType="viewmodels:AddFoodViewModel"
-             Title="AddFoodPage">
-    
+<ContentPage
+    x:Class="FinalProjectNoaRippel.Views.AddFoodPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
+    Title="AddFoodPage"
+    x:DataType="viewmodels:AddFoodViewModel"
+    BackgroundColor="White">
+
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
+        <helper:Base64ToImageConverter x:Key="Base64ToImageConverter" />
     </ContentPage.Resources>
-    
+
     <ScrollView>
         <VerticalStackLayout Padding="24,10" Spacing="10">
-            <Label 
-            Text="שם מאכל"
-            FontSize="16" 
-            HorizontalTextAlignment="End" 
-            TextColor="Black" />
+            <Label
+                FontSize="16"
+                HorizontalTextAlignment="End"
+                Text="שם מאכל"
+                TextColor="Black" />
 
             <Border
                 Padding="10"
@@ -26,53 +29,57 @@
                 StrokeShape="RoundRectangle 8"
                 StrokeThickness="1">
                 <Entry
+                    HorizontalTextAlignment="End"
                     Placeholder="הכנס שם מאכל"
                     Text="{Binding FoodName}"
-                    HorizontalTextAlignment="End"
                     TextColor="Black" />
             </Border>
-            <Label Text="תמונה" FontSize="16" HorizontalTextAlignment="End" TextColor="Black" />
+            <Label
+                FontSize="16"
+                HorizontalTextAlignment="End"
+                Text="תמונה"
+                TextColor="Black" />
             <Border
+                HeightRequest="200"
                 Stroke="#ccc"
                 StrokeShape="RoundRectangle 8"
-                StrokeThickness="1"
-                HeightRequest="200">
+                StrokeThickness="1">
                 <Grid>
-                    <!-- תמונה שנבחרה -->
+                    <!--  תמונה שנבחרה  -->
                     <Image
-                        Source="{Binding SelectedImage}"
                         Aspect="AspectFill"
-                        IsVisible="{Binding HasImage}" />   
-                     <!-- כפתור פלוס -->
+                        IsVisible="{Binding HasImage}"
+                        Source="{Binding SelectedImage, Converter={StaticResource Base64ToImageConverter}}" />
+                    <!--  כפתור פלוס  -->
                     <VerticalStackLayout
-            IsVisible="{Binding HasImage, Converter={StaticResource InverseBoolConverter}}"
-            VerticalOptions="Center"
-            HorizontalOptions="Center">
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding HasImage, Converter={StaticResource InverseBoolConverter}}"
+                        VerticalOptions="Center">
                         <Label
-                Text="+"
-                FontSize="50"
-                HorizontalOptions="Center"
-                TextColor="#555" />
+                            FontSize="50"
+                            HorizontalOptions="Center"
+                            Text="+"
+                            TextColor="#555" />
                         <Label
-                Text="בחר תמונה"
-                FontSize="14"
-                HorizontalOptions="Center"
-                TextColor="#555" />
+                            FontSize="14"
+                            HorizontalOptions="Center"
+                            Text="בחר תמונה"
+                            TextColor="#555" />
                     </VerticalStackLayout>
-                    <!-- לחיצה על כל הבלוק -->
+                    <!--  לחיצה על כל הבלוק  -->
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding PickImageCommand}" />
                     </Grid.GestureRecognizers>
                 </Grid>
             </Border>
-            <!-- כפתור שמור -->
+            <!--  כפתור שמור  -->
             <Button
-                Text="שמור"
                 BackgroundColor="#28396C"
-                TextColor="White"
+                Command="{Binding SaveCommand}"
                 CornerRadius="8"
                 HeightRequest="50"
-                Command="{Binding SaveCommand}" />
+                Text="שמור"
+                TextColor="White" />
 
         </VerticalStackLayout>
     </ScrollView>

@@ -1,6 +1,7 @@
 ﻿using FinalProjectNoaRippel.ViewModels;
 using Firebase.Database;
 using Firebase.Database.Query;
+using Microsoft.Maui.Graphics.Platform;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -80,7 +81,14 @@ namespace FinalProjectNoaRippel.ViewModels
                 var result = await MediaPicker.PickPhotoAsync();
                 if (result != null)
                 {
-                    SelectedImage = result.FullPath;
+                    using var stream = await result.OpenReadAsync();
+                    using var ms = new MemoryStream();
+                    await stream.CopyToAsync(ms);
+                    var originalBytes = ms.ToArray();
+
+                    // דוחס את התמונה
+                    var compressedBytes = await CompressImageAsync(originalBytes);
+                    SelectedImage = Convert.ToBase64String(compressedBytes);
                     HasImage = true;
                 }
             });
@@ -133,6 +141,23 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
             });
+        }
+
+        private async Task<byte[]> CompressImageAsync(byte[] imageBytes)
+        {
+            try
+            {
+                using var ms = new MemoryStream(imageBytes);
+                var image = PlatformImage.FromStream(ms);
+                var resized = image.Resize(300, 300);
+                using var outMs = new MemoryStream();
+                await resized.SaveAsync(outMs, ImageFormat.Jpeg, 0.5f);
+                return outMs.ToArray();
+            }
+            catch
+            {
+                return imageBytes;
+            }
         }
     }
 }

@@ -25,6 +25,12 @@ namespace FinalProjectNoaRippel.ViewModels
         private bool _errorVisible;
         private readonly IAppUserRepository _db;
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set { _isBusy = value; OnPropertyChanged(); }
+        }
         public string? FirstName
         {
             get => _firstName;
@@ -196,9 +202,12 @@ namespace FinalProjectNoaRippel.ViewModels
                 return;
             }
 
+
             try
             {
+                IsBusy = true; // מציג גלגל
                 var newUser = new User
+
                 {
                     FirstName = FirstName!,
                     LastName = LastName!,
@@ -206,12 +215,11 @@ namespace FinalProjectNoaRippel.ViewModels
                     UserPassword = UserPassword!,
                     UserMobile = UserMobile!,
                     RegDate = DateTime.Now,
-                    IsAdmin = false
-                };
-                await _db.CreateAsync(newUser);
+                   IsAdmin = false
 
-                // שומר קטגוריות ברירת מחדל למשתמש החדש
+                }; await _db.CreateAsync(newUser);
                 await SaveDefaultCategoriesAsync(newUser.Id);
+                IsBusy = false;
 
                 (App.Current as App)!.CurrentUser = newUser;
                 var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
@@ -219,6 +227,7 @@ namespace FinalProjectNoaRippel.ViewModels
             }
             catch (Exception ex)
             {
+                IsBusy = false;
                 ErrorMessage = ex.Message;
                 ErrorVisible = true;
             }

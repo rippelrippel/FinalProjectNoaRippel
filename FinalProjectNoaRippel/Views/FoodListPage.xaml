@@ -1,90 +1,101 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="FinalProjectNoaRippel.Views.FoodListPage"
-             BackgroundColor="White"
-             Title="FoodListPage">
- <ContentPage.Resources>
+<ContentPage
+    x:Class="FinalProjectNoaRippel.Views.FoodListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="FoodListPage"
+    BackgroundColor="White">
+    <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
+        <helper:Base64ToImageConverter x:Key="Base64ToImageConverter" />
     </ContentPage.Resources>
     <Grid RowDefinitions="*,Auto">
 
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,10" Spacing="10">
-            <Label
-                FontAttributes="Bold"
-                FontSize="26"
-                Text="כיתוב כלשהו"
-                TextColor="Black"
-                HorizontalOptions="Center"/>
-            <BoxView HeightRequest="2" BackgroundColor="Gray" />
-            <CollectionView ItemsSource="{Binding FoodItems}">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <!-- בלוק תמונה -->
-                            <Frame
-                                IsVisible="{Binding IsAddButton, Converter={StaticResource InverseBoolConverter}}"
-                                Padding="0"
-                                CornerRadius="8"
-                                IsClippedToBounds="True"
-                                HeightRequest="150">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Frame.GestureRecognizers>
-                                <Grid>
-                                    <Image Aspect="AspectFill" Source="{Binding ImageSource}" />
-                                    <Label
-                                        Text="{Binding Name}"
-                                        TextColor="White"
-                                        FontAttributes="Bold"
-                                        VerticalOptions="End"
-                                        HorizontalOptions="Center"
-                                        Margin="0,0,0,8" />
-                                </Grid>
-                            </Frame>
-                            <!-- בלוק הוספה -->
-                            <Frame
-                                IsVisible="{Binding IsAddButton}"
-                                Padding="0"
-                                CornerRadius="8"
-                                BackgroundColor="Wheat"
-                                HeightRequest="150">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Frame.GestureRecognizers>
-                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                                    <Label Text="+" FontSize="40" HorizontalOptions="Center" TextColor="#555" />
-                                    <Label Text="הוסף מתכון" FontSize="14" HorizontalOptions="Center" TextColor="#555" />
-                                </VerticalStackLayout>
-                            </Frame>
-                        </Grid>
-                        
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="26"
+                    HorizontalOptions="Center"
+                    Text="כיתוב כלשהו"
+                    TextColor="Black" />
+                <BoxView BackgroundColor="Gray" HeightRequest="2" />
+                <CollectionView ItemsSource="{Binding FoodItems}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout
+                            HorizontalItemSpacing="10"
+                            Orientation="Vertical"
+                            Span="2"
+                            VerticalItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <!--  בלוק תמונה  -->
+                                <Frame
+                                    Padding="0"
+                                    CornerRadius="8"
+                                    HeightRequest="150"
+                                    IsClippedToBounds="True"
+                                    IsVisible="{Binding IsAddButton, Converter={StaticResource InverseBoolConverter}}">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <Grid>
+                                        <Image Aspect="AspectFill" Source="{Binding ImageSource}" />
+                                        <Label
+                                            Margin="0,0,0,8"
+                                            FontAttributes="Bold"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding Name}"
+                                            TextColor="White"
+                                            VerticalOptions="End" />
+                                    </Grid>
+                                </Frame>
+                                <!--  בלוק הוספה  -->
+                                <Frame
+                                    Padding="0"
+                                    BackgroundColor="Wheat"
+                                    CornerRadius="8"
+                                    HeightRequest="150"
+                                    IsVisible="{Binding IsAddButton}">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label
+                                            FontSize="40"
+                                            HorizontalOptions="Center"
+                                            Text="+"
+                                            TextColor="#555" />
+                                        <Label
+                                            FontSize="14"
+                                            HorizontalOptions="Center"
+                                            Text="הוסף מתכון"
+                                            TextColor="#555" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </Grid>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
         <Grid
             Grid.Row="1"
-            ColumnDefinitions="*,*"
             Padding="24,12"
-            BackgroundColor="White">
+            BackgroundColor="White"
+            ColumnDefinitions="*,*">
             <Label
                 Grid.Column="0"
-                Text="&#xE872;"
                 FontFamily="MaterialIcons"
                 FontSize="28"
-                TextColor="#CC0000"
                 HorizontalOptions="Start"
+                Text="&#xE872;"
+                TextColor="#CC0000"
                 VerticalOptions="Center">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding DeleteCategoryCommand}" />

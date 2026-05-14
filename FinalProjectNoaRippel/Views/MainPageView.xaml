@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
              x:Class="FinalProjectNoaRippel.Views.MainPageView"
              BackgroundColor="white"
              Title="">
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
+        <helper:Base64ToImageConverter x:Key="Base64ToImageConverter" />
     </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout Padding="24,10" Spacing="10">
             <Label
@@ -48,7 +50,7 @@
                                 </Frame.GestureRecognizers>
                                 <Image
                                     Aspect="AspectFill"
-                                    Source="{Binding ImageSource}" />
+                                    Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}" />
                             </Frame>
                             <!-- בלוק הוספה -->
                             <Frame
