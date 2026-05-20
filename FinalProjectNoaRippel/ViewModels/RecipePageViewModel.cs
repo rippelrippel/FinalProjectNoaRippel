@@ -1,10 +1,10 @@
-﻿using Firebase.Database;
+﻿using FinalProjectNoaRippel.Models;
+using Firebase.Database;
 using Firebase.Database.Query;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -16,7 +16,6 @@ namespace FinalProjectNoaRippel.ViewModels
     {
         private string? _foodName;
         private string? _categoryName;
-
         private readonly FirebaseClient _db;
         private string? _recipeKey;
         private string? _categoryKey;
@@ -57,50 +56,29 @@ namespace FinalProjectNoaRippel.ViewModels
             DeleteRecipeCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
-                    "מחיקת מתכון",
-                    $"האם אתה בטוח שאתה רוצה למחוק את \"{RecipeName}\"?",
-                    "כן, מחק",
-                    "ביטול"
-                );
+                    "מחיקת מתכון", $"האם אתה בטוח שאתה רוצה למחוק את \"{RecipeName}\"?", "כן, מחק", "ביטול");
 
                 if (confirmed)
                 {
                     var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
-
                     if (_categoryKey != null && _recipeKey != null)
                     {
                         await _db
-                            .Child("users")
-                            .Child(uid)
-                            .Child("categories")
-                            .Child(_categoryKey)
-                            .Child("recipes")
-                            .Child(_recipeKey)
-                            .DeleteAsync();
-
-                        await _db
-                            .Child("users")
-                            .Child(uid)
-                            .Child("categories")
-                            .Child(_categoryKey)
-                            .Child("recipeDetails")
-                            .Child(_foodName!)
+                            .Child("users").Child(uid)
+                            .Child("categories").Child(_categoryKey)
+                            .Child("recipes").Child(_recipeKey)
                             .DeleteAsync();
                     }
-
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={_categoryName}");
                 }
             });
 
             GoToEditCommand = new Command(async () =>
-            {
-                await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
-            });
+                await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}"));
 
             ToggleIngredientCommand = new Command<CheckableItem>(item =>
             {
-                if (item != null)
-                    item.IsChecked = !item.IsChecked;
+                if (item != null) item.IsChecked = !item.IsChecked;
             });
 
             AddToShoppingListCommand = new Command<CheckableItem>(async item =>
@@ -108,10 +86,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (item != null)
                 {
                     var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
-                    await _db
-                        .Child("users")
-                        .Child(uid)
-                        .Child("shoppingList")
+                    await _db.Child("users").Child(uid).Child("shoppingList")
                         .PostAsync(new { Text = item.Text });
                 }
             });
@@ -128,52 +103,31 @@ namespace FinalProjectNoaRippel.ViewModels
                 var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
 
                 var categories = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
+                    .Child("users").Child(uid).Child("categories")
                     .OnceAsync<FoodCategoryData>();
-
-                // תוקן: Trim() כדי להתמודד עם רווחים מיותרים
                 var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == _categoryName?.Trim());
                 if (category == null) return;
                 _categoryKey = category.Key;
 
                 var recipes = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(_categoryKey)
+                    .Child("users").Child(uid)
+                    .Child("categories").Child(_categoryKey)
                     .Child("recipes")
-                    .OnceAsync<FoodItemData>();
+                    .OnceAsync<Recipe>();
 
                 var recipe = recipes.FirstOrDefault(r => r.Object.Name == foodName);
-                if (recipe != null)
-                    _recipeKey = recipe.Key;
+                if (recipe == null) return;
 
-                var details = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(_categoryKey)
-                    .Child("recipeDetails")
-                    .Child(foodName)
-                    .OnceSingleAsync<RecipeDetails>();
+                _recipeKey = recipe.Key;
+                RecipeName = recipe.Object.Name ?? foodName;
 
                 Ingredients.Clear();
-                Instructions.Clear();
+                foreach (var i in recipe.Object.Ingredients ?? new())
+                    Ingredients.Add(new CheckableItem { Text = i });
 
-                if (details != null)
-                {
-                    RecipeName = details.Name ?? foodName;
-                    foreach (var i in details.Ingredients ?? new())
-                        Ingredients.Add(new CheckableItem { Text = i });
-                    foreach (var i in details.Instructions ?? new())
-                        Instructions.Add(new CheckableItem { Text = i });
-                }
-                else
-                {
-                    RecipeName = foodName;
-                }
+                Instructions.Clear();
+                foreach (var i in recipe.Object.Instructions ?? new())
+                    Instructions.Add(new CheckableItem { Text = i });
 
                 OnPropertyChanged(nameof(RecipeName));
             }

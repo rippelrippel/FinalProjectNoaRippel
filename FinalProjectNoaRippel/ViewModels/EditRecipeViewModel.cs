@@ -1,10 +1,9 @@
-﻿using Firebase.Database;
+﻿using FinalProjectNoaRippel.Models;
+using Firebase.Database;
 using Firebase.Database.Query;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -19,6 +18,7 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _recipeName;
         private readonly FirebaseClient _db;
         private string? _categoryKey;
+        private string? _recipeKey;
 
         public static string? CurrentFoodName { get; private set; }
 
@@ -47,11 +47,7 @@ namespace FinalProjectNoaRippel.ViewModels
             }
         }
 
-        public string? RecipeName
-        {
-            get => _recipeName;
-            set { _recipeName = value; OnPropertyChanged(); }
-        }
+        public string? RecipeName { get => _recipeName; set { _recipeName = value; OnPropertyChanged(); } }
 
         public ObservableCollection<IngredientItem> Ingredients { get; set; } = new();
         public ObservableCollection<IngredientItem> Instructions { get; set; } = new();
@@ -69,16 +65,8 @@ namespace FinalProjectNoaRippel.ViewModels
 
             AddIngredientCommand = new Command(() => Ingredients.Add(new IngredientItem()));
             AddInstructionCommand = new Command(() => Instructions.Add(new IngredientItem()));
-
-            RemoveIngredientCommand = new Command<IngredientItem>(item =>
-            {
-                if (item != null) Ingredients.Remove(item);
-            });
-
-            RemoveInstructionCommand = new Command<IngredientItem>(item =>
-            {
-                if (item != null) Instructions.Remove(item);
-            });
+            RemoveIngredientCommand = new Command<IngredientItem>(item => { if (item != null) Ingredients.Remove(item); });
+            RemoveInstructionCommand = new Command<IngredientItem>(item => { if (item != null) Instructions.Remove(item); });
 
             SaveCommand = new Command(async () =>
             {
@@ -90,29 +78,30 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (_categoryKey == null)
                 {
                     var categories = await _db
-                        .Child("users")
-                        .Child(uid)
-                        .Child("categories")
+                        .Child("users").Child(uid).Child("categories")
                         .OnceAsync<FoodCategoryData>();
-
                     var cat = categories.FirstOrDefault(c => c.Object.Name?.Trim() == _categoryName?.Trim());
                     if (cat == null) return;
                     _categoryKey = cat.Key;
                 }
 
+                if (_recipeKey == null) return;
+
+                var updatedRecipe = new Recipe
+                {
+                    Id = _recipeKey,
+                    Name = RecipeName,
+                    CategoryName = _categoryName,
+                    Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                    Instructions = Instructions.Select(i => i.Text).ToList(),
+                    UpdatedDate = DateTime.Now
+                };
+
                 await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(_categoryKey)
-                    .Child("recipeDetails")
-                    .Child(_foodName!)
-                    .PutAsync(new
-                    {
-                        Name = RecipeName,
-                        Ingredients = Ingredients.Select(i => i.Text).ToList(),
-                        Instructions = Instructions.Select(i => i.Text).ToList()
-                    });
+                    .Child("users").Child(uid)
+                    .Child("categories").Child(_categoryKey)
+                    .Child("recipes").Child(_recipeKey)
+                    .PutAsync(updatedRecipe);
 
                 await Shell.Current.GoToAsync($"///RecipePage?FoodName={FoodName}&CategoryName={CategoryName}");
             });
@@ -120,12 +109,7 @@ namespace FinalProjectNoaRippel.ViewModels
             GoBackCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
-                    "יציאה מעריכה",
-                    "אם תצא השינויים לא יישמרו",
-                    "כן, צא",
-                    "ביטול"
-                );
-
+                    "יציאה מעריכה", "אם תצא השינויים לא יישמרו", "כן, צא", "ביטול");
                 if (confirmed)
                     await Shell.Current.GoToAsync($"///RecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
             });
@@ -138,34 +122,30 @@ namespace FinalProjectNoaRippel.ViewModels
                 var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
 
                 var categories = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
+                    .Child("users").Child(uid).Child("categories")
                     .OnceAsync<FoodCategoryData>();
-
                 var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == _categoryName?.Trim());
                 if (category == null) return;
                 _categoryKey = category.Key;
 
-                var details = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(_categoryKey)
-                    .Child("recipeDetails")
-                    .Child(foodName)
-                    .OnceSingleAsync<RecipeDetails>();
+                var recipes = await _db
+                    .Child("users").Child(uid)
+                    .Child("categories").Child(_categoryKey)
+                    .Child("recipes")
+                    .OnceAsync<Recipe>();
 
-                if (details == null) return;
+                var recipe = recipes.FirstOrDefault(r => r.Object.Name == foodName);
+                if (recipe == null) return;
 
-                RecipeName = details.Name ?? foodName;
+                _recipeKey = recipe.Key;
+                RecipeName = recipe.Object.Name ?? foodName;
 
                 Ingredients.Clear();
-                foreach (var i in details.Ingredients ?? new())
+                foreach (var i in recipe.Object.Ingredients ?? new())
                     Ingredients.Add(new IngredientItem { Text = i });
 
                 Instructions.Clear();
-                foreach (var i in details.Instructions ?? new())
+                foreach (var i in recipe.Object.Instructions ?? new())
                     Instructions.Add(new IngredientItem { Text = i });
             }
             catch { }

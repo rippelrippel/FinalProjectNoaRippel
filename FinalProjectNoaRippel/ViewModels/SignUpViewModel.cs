@@ -215,7 +215,7 @@ namespace FinalProjectNoaRippel.ViewModels
                     UserPassword = UserPassword!,
                     UserMobile = UserMobile!,
                     RegDate = DateTime.Now,
-                   IsAdmin = false
+                    IsAdmin = false
 
                 }; await _db.CreateAsync(newUser);
                 await SaveDefaultCategoriesAsync(newUser.Id);
@@ -241,65 +241,75 @@ namespace FinalProjectNoaRippel.ViewModels
         new {
             Category = new { Name = "cookies", ImageSource = "cookies.png" },
             Recipes = new[] {
-                new { Name = "Chocolate Chip", ImageSource = "cookies.png",
-                    Ingredients = new[] { "2 כוסות קמח", "1 כוס שוקולד צ'יפס", "100 גרם חמאה" },
-                    Instructions = new[] { "1. מחממים תנור ל-180", "2. מערבבים הכל", "3. אופים 12 דקות" }
+                new Recipe { Name = "Chocolate Chip", ImageSource = "cookies.png", CategoryName = "cookies",
+                    Ingredients = new List<string> { "2 כוסות קמח", "1 כוס שוקולד צ'יפס", "100 גרם חמאה" },
+                    Instructions = new List<string> { "1. מחממים תנור ל-180", "2. מערבבים הכל", "3. אופים 12 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 },
-                new { Name = "Oatmeal", ImageSource = "cookies.png",
-                    Ingredients = new[] { "2 כוסות שיבולת שועל", "1 ביצה", "50 גרם חמאה" },
-                    Instructions = new[] { "1. מחממים תנור ל-175", "2. מערבבים הכל", "3. אופים 15 דקות" }
+                new Recipe { Name = "Oatmeal", ImageSource = "cookies.png", CategoryName = "cookies",
+                    Ingredients = new List<string> { "2 כוסות שיבולת שועל", "1 ביצה", "50 גרם חמאה" },
+                    Instructions = new List<string> { "1. מחממים תנור ל-175", "2. מערבבים הכל", "3. אופים 15 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 }
             }
         },
         new {
             Category = new { Name = "cinnamon rolls", ImageSource = "cinnamonrolls.png" },
             Recipes = new[] {
-                new { Name = "Classic Roll", ImageSource = "cinnamonrolls.png",
-                    Ingredients = new[] { "3 כוסות קמח", "1 כף קינמון", "50 גרם חמאה" },
-                    Instructions = new[] { "1. מכינים בצק", "2. מורחים קינמון", "3. אופים 25 דקות" }
+                new Recipe { Name = "Classic Roll", ImageSource = "cinnamonrolls.png", CategoryName = "cinnamon rolls", 
+                    Ingredients = new List<string> { "3 כוסות קמח", "1 כף קינמון", "50 גרם חמאה" },
+                    Instructions = new List<string> { "1. מכינים בצק", "2. מורחים קינמון", "3. אופים 25 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 },
-                new { Name = "Cream Roll", ImageSource = "cinnamonrolls.png",
-                    Ingredients = new[] { "3 כוסות קמח", "200 מל שמנת", "1 כף קינמון" },
-                    Instructions = new[] { "1. מכינים בצק עם שמנת", "2. מורחים קינמון", "3. אופים 25 דקות" }
+                new Recipe { Name = "Cream Roll", ImageSource = "cinnamonrolls.png", CategoryName = "cinnamon rolls",
+                    Ingredients = new List<string> { "3 כוסות קמח", "200 מל שמנת", "1 כף קינמון" },
+                    Instructions = new List<string> { "1. מכינים בצק עם שמנת", "2. מורחים קינמון", "3. אופים 25 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 }
             }
         },
         new {
             Category = new { Name = "chocolate cake", ImageSource = "chocolatecake.png" },
             Recipes = new[] {
-                new { Name = "Fudge Cake", ImageSource = "chocolatecake.png",
-                    Ingredients = new[] { "2 כוסות קמח", "1 כוס קקאו", "3 ביצים", "200 גרם חמאה" },
-                    Instructions = new[] { "1. מחממים תנור ל-175", "2. מערבבים חמאה וסוכר", "3. מוסיפים ביצים וקמח", "4. אופים 35 דקות" }
+                new Recipe { Name = "Fudge Cake", ImageSource = "chocolatecake.png", CategoryName = "chocolate cake", 
+                    Ingredients = new List<string> { "2 כוסות קמח", "1 כוס קקאו", "3 ביצים", "200 גרם חמאה" },
+                    Instructions = new List<string> { "1. מחממים תנור ל-175", "2. מערבבים חמאה וסוכר", "3. מוסיפים ביצים וקמח", "4. אופים 35 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 },
-                new { Name = "Lava Cake", ImageSource = "chocolatecake.png",
-                    Ingredients = new[] { "100 גרם שוקולד", "2 ביצים", "50 גרם חמאה" },
-                    Instructions = new[] { "1. ממיסים שוקולד וחמאה", "2. מוסיפים ביצים", "3. אופים 12 דקות" }
+                new Recipe { Name = "Lava Cake", ImageSource = "chocolatecake.png", CategoryName = "chocolate cake", 
+                    Ingredients = new List<string> { "100 גרם שוקולד", "2 ביצים", "50 גרם חמאה" },
+                    Instructions = new List<string> { "1. ממיסים שוקולד וחמאה", "2. מוסיפים ביצים", "3. אופים 12 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 }
             }
         },
         new {
             Category = new { Name = "cupcake", ImageSource = "cupcake.png" },
             Recipes = new[] {
-                new { Name = "Vanilla Cupcake", ImageSource = "cupcake.png",
-                    Ingredients = new[] { "2 כוסות קמח", "1 כוס סוכר", "2 ביצים", "1 כוס חלב" },
-                    Instructions = new[] { "1. מחממים תנור ל-180", "2. מערבבים יבשים ורטובים", "3. אופים 20 דקות" }
+                new Recipe { Name = "Vanilla Cupcake", ImageSource = "cupcake.png", CategoryName = "cupcake", 
+                    Ingredients = new List<string> { "2 כוסות קמח", "1 כוס סוכר", "2 ביצים", "1 כוס חלב" },
+                    Instructions = new List<string> { "1. מחממים תנור ל-180", "2. מערבבים יבשים ורטובים", "3. אופים 20 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 },
-                new { Name = "Chocolate Cupcake", ImageSource = "cupcake.png",
-                    Ingredients = new[] { "2 כוסות קמח", "1 כוס קקאו", "2 ביצים", "1 כוס חלב" },
-                    Instructions = new[] { "1. מחממים תנור ל-180", "2. מערבבים הכל", "3. אופים 20 דקות" }
+                new Recipe { Name = "Chocolate Cupcake", ImageSource = "cupcake.png", CategoryName = "cupcake", 
+                    Ingredients = new List<string> { "2 כוסות קמח", "1 כוס קקאו", "2 ביצים", "1 כוס חלב" },
+                    Instructions = new List<string> { "1. מחממים תנור ל-180", "2. מערבבים הכל", "3. אופים 20 דקות" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 }
             }
         },
         new {
             Category = new { Name = "pasta", ImageSource = "pasta.png" },
             Recipes = new[] {
-                new { Name = "Spaghetti", ImageSource = "pasta.png",
-                    Ingredients = new[] { "200 גרם ספגטי", "1 רוטב עגבניות", "שום" },
-                    Instructions = new[] { "1. מבשלים ספגטי", "2. מחממים רוטב", "3. מערבבים" }
+                new Recipe { Name = "Spaghetti", ImageSource = "pasta.png", CategoryName = "pasta", 
+                    Ingredients = new List<string> { "200 גרם ספגטי", "1 רוטב עגבניות", "שום" },
+                    Instructions = new List<string> { "1. מבשלים ספגטי", "2. מחממים רוטב", "3. מערבבים" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 },
-                new { Name = "Penne", ImageSource = "pasta.png",
-                    Ingredients = new[] { "200 גרם פנה", "שמנת", "פטריות" },
-                    Instructions = new[] { "1. מבשלים פנה", "2. מטגנים פטריות", "3. מוסיפים שמנת" }
+                new Recipe { Name = "Penne", ImageSource = "pasta.png", CategoryName = "pasta",
+                    Ingredients = new List<string> { "200 גרם פנה", "שמנת", "פטריות" },
+                    Instructions = new List<string> { "1. מבשלים פנה", "2. מטגנים פטריות", "3. מוסיפים שמנת" },
+                    CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now
                 }
             }
         }
@@ -314,32 +324,27 @@ namespace FinalProjectNoaRippel.ViewModels
                     .Child("categories")
                     .PostAsync(data.Category);
 
-                // שומר את המתכונים של הקטגוריה
+                // שומר את המתכונים — הכל במקום אחד
                 foreach (var recipe in data.Recipes)
                 {
-                    // שומר את המתכון ברשימה
+                    var result = await db
+                        .Child("users")
+                        .Child(uid)
+                        .Child("categories")
+                        .Child(categoryResult.Key)
+                        .Child("recipes")
+                        .PostAsync(recipe);
+
+                    // שומר את ה-Id שנוצר ב-Firebase
+                    recipe.Id = result.Key;
                     await db
                         .Child("users")
                         .Child(uid)
                         .Child("categories")
                         .Child(categoryResult.Key)
                         .Child("recipes")
-                        .PostAsync(new { recipe.Name, recipe.ImageSource });
-
-                    // שומר את פרטי המתכון
-                    await db
-                        .Child("users")
-                        .Child(uid)
-                        .Child("categories")
-                        .Child(categoryResult.Key)
-                        .Child("recipeDetails")
-                        .Child(recipe.Name)
-                        .PutAsync(new
-                        {
-                            recipe.Name,
-                            recipe.Ingredients,
-                            recipe.Instructions
-                        });
+                        .Child(result.Key)
+                        .PutAsync(recipe);
                 }
             }
         }

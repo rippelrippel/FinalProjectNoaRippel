@@ -1,4 +1,4 @@
-﻿using FinalProjectNoaRippel.ViewModels;
+﻿using FinalProjectNoaRippel.Models;
 using Firebase.Database;
 using Firebase.Database.Query;
 using Microsoft.Maui.Graphics.Platform;
@@ -30,35 +30,11 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _selectedImage;
         private bool _hasImage = false;
 
-        public string? RecipeName
-        {
-            get => _recipeName;
-            set { _recipeName = value; OnPropertyChanged(); }
-        }
-
-        public string? FoodName
-        {
-            get => _foodName;
-            set { _foodName = value; OnPropertyChanged(); }
-        }
-
-        public string? CategoryName
-        {
-            get => _categoryName;
-            set { _categoryName = value; OnPropertyChanged(); }
-        }
-
-        public string? SelectedImage
-        {
-            get => _selectedImage;
-            set { _selectedImage = value; OnPropertyChanged(); }
-        }
-
-        public bool HasImage
-        {
-            get => _hasImage;
-            set { _hasImage = value; OnPropertyChanged(); }
-        }
+        public string? RecipeName { get => _recipeName; set { _recipeName = value; OnPropertyChanged(); } }
+        public string? FoodName { get => _foodName; set { _foodName = value; OnPropertyChanged(); } }
+        public string? CategoryName { get => _categoryName; set { _categoryName = value; OnPropertyChanged(); } }
+        public string? SelectedImage { get => _selectedImage; set { _selectedImage = value; OnPropertyChanged(); } }
+        public bool HasImage { get => _hasImage; set { _hasImage = value; OnPropertyChanged(); } }
 
         public ICommand AddIngredientCommand { get; }
         public ICommand AddInstructionCommand { get; }
@@ -81,8 +57,7 @@ namespace FinalProjectNoaRippel.ViewModels
                     using var stream = await result.OpenReadAsync();
                     using var ms = new MemoryStream();
                     await stream.CopyToAsync(ms);
-                    var originalBytes = ms.ToArray();
-                    var compressedBytes = await CompressImageAsync(originalBytes);
+                    var compressedBytes = await CompressImageAsync(ms.ToArray());
                     SelectedImage = Convert.ToBase64String(compressedBytes);
                     HasImage = true;
                 }
@@ -97,44 +72,37 @@ namespace FinalProjectNoaRippel.ViewModels
                 var db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
                 var categories = await db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
+                    .Child("users").Child(uid).Child("categories")
                     .OnceAsync<FoodCategoryData>();
-
-                var categoryNames = string.Join(", ", categories.Select(c => c.Object.Name));
 
                 var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == FoodName?.Trim());
                 if (category == null) return;
-                
+
                 try
                 {
+                    var recipe = new Recipe
+                    {
+                        Name = RecipeName,
+                        ImageSource = SelectedImage ?? "nophoto.jpeg",
+                        CategoryName = FoodName,
+                        Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                        Instructions = Instructions.Select(i => i.Text).ToList(),
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now
+                    };
 
-                    await db
-                        .Child("users")
-                        .Child(uid)
-                        .Child("categories")
-                        .Child(category.Key)
+                    var result = await db
+                        .Child("users").Child(uid)
+                        .Child("categories").Child(category.Key)
                         .Child("recipes")
-                        .PostAsync(new
-                        {
-                            Name = RecipeName,
-                            ImageSource = SelectedImage ?? "nophoto.jpeg"
-                        });
+                        .PostAsync(recipe);
 
+                    recipe.Id = result.Key;
                     await db
-                        .Child("users")
-                        .Child(uid)
-                        .Child("categories")
-                        .Child(category.Key)
-                        .Child("recipeDetails")
-                        .Child(RecipeName!)
-                        .PutAsync(new
-                        {
-                            Name = RecipeName,
-                            Ingredients = Ingredients.Select(i => i.Text).ToList(),
-                            Instructions = Instructions.Select(i => i.Text).ToList()
-                        });
+                        .Child("users").Child(uid)
+                        .Child("categories").Child(category.Key)
+                        .Child("recipes").Child(result.Key)
+                        .PutAsync(recipe);
 
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
                 }
@@ -156,10 +124,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 await resized.SaveAsync(outMs, ImageFormat.Jpeg, 0.5f);
                 return outMs.ToArray();
             }
-            catch
-            {
-                return imageBytes;
-            }
+            catch { return imageBytes; }
         }
     }
 }

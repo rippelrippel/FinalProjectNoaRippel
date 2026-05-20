@@ -1,16 +1,13 @@
 ﻿using Firebase.Database;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-
-using Firebase.Database;
 using Firebase.Database.Query;
+using FinalProjectNoaRippel.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using static FinalProjectNoaRippel.ViewModels.MainPageViewModel;
- 
+
 namespace FinalProjectNoaRippel.ViewModels
 {
     [QueryProperty(nameof(CategoryName), "CategoryName")]
@@ -58,13 +55,11 @@ namespace FinalProjectNoaRippel.ViewModels
                     "כן, מחק",
                     "ביטול"
                 );
-
                 if (confirmed)
                 {
                     var mainVm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
                     if (mainVm != null)
                         await mainVm.RemoveCategoryAsync(_categoryName!);
-
                     await Shell.Current.GoToAsync("///MainPageView");
                 }
             });
@@ -83,9 +78,7 @@ namespace FinalProjectNoaRippel.ViewModels
                     .Child("categories")
                     .OnceAsync<FoodCategoryData>();
 
-                // תוקן: הוספת Trim() כדי להתמודד עם רווחים מיותרים בשמות קטגוריות
                 var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == categoryName?.Trim());
-
                 if (category == null)
                 {
                     FoodItems.Add(new FoodItem { IsAddButton = true });
@@ -95,12 +88,10 @@ namespace FinalProjectNoaRippel.ViewModels
                 _categoryKey = category.Key;
 
                 var recipes = await _db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(_categoryKey)
+                    .Child("users").Child(uid)
+                    .Child("categories").Child(_categoryKey)
                     .Child("recipes")
-                    .OnceAsync<FoodItemData>();
+                    .OnceAsync<Recipe>();
 
                 foreach (var recipe in recipes)
                     FoodItems.Add(new FoodItem
@@ -123,17 +114,22 @@ namespace FinalProjectNoaRippel.ViewModels
             var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
             if (_categoryKey == null) return;
 
+            var recipe = new Recipe
+            {
+                Name = food.Name,
+                ImageSource = food.ImageSource,
+                CategoryName = _categoryName,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
+
             var result = await _db
                 .Child("users")
                 .Child(uid)
                 .Child("categories")
                 .Child(_categoryKey)
                 .Child("recipes")
-                .PostAsync(new FoodItemData
-                {
-                    Name = food.Name,
-                    ImageSource = food.ImageSource
-                });
+                .PostAsync(recipe);
 
             food.Key = result.Key;
             FoodItems.Insert(FoodItems.Count - 1, food);
