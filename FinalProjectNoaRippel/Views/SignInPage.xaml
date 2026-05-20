@@ -16,7 +16,6 @@
             Spacing="25"
             VerticalOptions="Start">
 
-            <!--  כותרת  -->
             <Label
                 Padding="30"
                 FontAttributes="Bold"
@@ -72,7 +71,6 @@
                 </Grid>
             </Border>
 
-            <!--  כפתור כניסה  -->
             <Button
                 BackgroundColor="#28396C"
                 Command="{Binding SignInCommand}"
@@ -104,7 +102,6 @@
                     TextColor="#28396C" />
             </VerticalStackLayout>
 
-            <!--  שגיאה  -->
             <Label
                 FontSize="14"
                 HorizontalTextAlignment="Center"
@@ -114,13 +111,11 @@
         </VerticalStackLayout>
 
 
-        <!--  מסך טעינה  -->
         <Grid
             HorizontalOptions="Fill"
             IsVisible="{Binding IsBusy}"
             VerticalOptions="Fill">
 
-            <!--  מסך טעינה  -->
             <Grid
                 HorizontalOptions="Fill"
                 IsVisible="{Binding IsBusy}"

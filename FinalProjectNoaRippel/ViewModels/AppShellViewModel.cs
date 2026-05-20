@@ -1,9 +1,5 @@
 ﻿using FinalProjectNoaRippel.Views;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
@@ -17,28 +13,26 @@ namespace FinalProjectNoaRippel.ViewModels
         public ICommand GoToAccountCommand { get; }
         public ICommand GoToAdminCommand { get; }
         public ICommand LogoutCommand { get; }
+
         public AppShellViewModel(SignInPage signInPage)
         {
             _signInPage = signInPage;
 
             GoToHomeCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("///MainPageView"));
-
             GoToAccountCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("///UserDetailsPage"));
-
             GoToAdminCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("///AdminPage"));
-
             LogoutCommand = new Command(Logout);
 
-            //עשייה ידנית של החזרה אחורה
             GoBackCommand = new Command(async () =>
             {
                 var current = Shell.Current?.CurrentState?.Location?.ToString();
-                //עמוד ראשי כלום
+
                 if (current == null || current.Contains("MainPageView"))
                     return;
+
                 if (current.Contains("EditRecipePage"))
                 {
                     bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
@@ -47,16 +41,20 @@ namespace FinalProjectNoaRippel.ViewModels
                         "כן, צא",
                         "ביטול"
                     );
-
                     if (confirmed)
                         await Shell.Current.GoToAsync($"///RecipePage?FoodName={EditRecipeViewModel.CurrentFoodName}&CategoryName={FoodListViewModel.CurrentCategory}");
-
-                    return; 
+                    return;
                 }
-                //עמוד מתכון לעמוד כל המתכונים
+
+                // חזרה מדף מתכון בבלוג → חזרה לבלוג
+                if (current.Contains("BlogRecipePage") || current.Contains("AddBlogRecipePage"))
+                {
+                    await Shell.Current.GoToAsync("///BlogPage");
+                    return;
+                }
+
                 if (current.Contains("RecipePage") || current.Contains("AddRecipePage"))
                     await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodListViewModel.CurrentCategory}");
-                //עמוד כמה מתכונים לעמוד רשימת מאכלים וכך אלה
                 else if (current.Contains("FoodListPage"))
                     await Shell.Current.GoToAsync("///MainPageView");
                 else if (current.Contains("AddFoodPage"))
@@ -69,9 +67,10 @@ namespace FinalProjectNoaRippel.ViewModels
                     await Shell.Current.GoToAsync("///AdminPage");
                 else if (current.Contains("EditShoppingListPage"))
                     await Shell.Current.GoToAsync("///ShoppingListPage");
+                else if (current.Contains("BlogPage"))
+                    await Shell.Current.GoToAsync("///MainPageView");
                 else
                     await Shell.Current.GoToAsync("///MainPageView");
-
             });
         }
 
@@ -82,10 +81,8 @@ namespace FinalProjectNoaRippel.ViewModels
 
         private void Logout()
         {
-            //מאפס הכל
             var mainVm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
             mainVm?.FoodCategories.Clear();
-
             (App.Current as App)!.CurrentUser = null;
             OnPropertyChanged(nameof(IsAdmin));
             Application.Current!.Windows[0].Page = new NavigationPage(_signInPage);

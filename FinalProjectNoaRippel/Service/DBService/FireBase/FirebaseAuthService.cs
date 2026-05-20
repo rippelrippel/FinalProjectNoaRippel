@@ -1,9 +1,6 @@
 ﻿using Firebase.Auth;
 using Firebase.Auth.Providers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FinalProjectNoaRippel.Service.DBService.FireBase
@@ -11,23 +8,17 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
     public class FirebaseAuthService : IAuthService
     {
         private FirebaseAuthClient? _authClient;
-private IAppLogger? _logger;
 
         public FirebaseAuthService()
-        { 
-            //Initialize Firebase Authentication Client
+        {
             var config = new FirebaseAuthConfig()
             {
-                //current_key from google-services.json
                 ApiKey = "AIzaSyDwWFg6DxPrcRIvJwS29RV_m3RvwgjICsU",
-
-                //project_id from google-services.json + ".firebaseapp.com"
                 AuthDomain = "finalprojectnoarippel.firebaseapp.com",
                 Providers = new FirebaseAuthProvider[]
-                    {
-                        new EmailProvider()
-                    },
-                //UserRepository = new FileUserRepository("AppCurrentUser") //Save login status localy
+                {
+                    new EmailProvider()
+                },
             };
             _authClient = new FirebaseAuthClient(config);
         }
@@ -48,23 +39,18 @@ private IAppLogger? _logger;
             catch (FirebaseAuthException ex)
             {
                 if (ex.Message.Contains("INVALID_LOGIN_CREDENTIALS"))
-                {
                     errorMessage = "Incorrect email or password!";
-                    _logger?.LogDebug($" SignInAuth failed: {userEmail} {userPassword}, {errorMessage}");
-                }
                 else
-                {
                     errorMessage = "SignInAuth failed: Unknown exception!";
-                    _logger?.LogDebug($"SignInAuth failed: {userEmail} {userPassword}, Unknown exception!");
-                }
+
                 throw new Exception(errorMessage);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger?.LogDebug($"SignInAuth failed: {userEmail} {userPassword}, {ex.Message}");
                 throw new Exception("SignIn failed!");
             }
         }
+
         public async Task<string> CreateAuth(string email, string password)
         {
             try
@@ -74,7 +60,7 @@ private IAppLogger? _logger;
             }
             catch (FirebaseAuthException ex)
             {
-                string errorMessage = string.Empty;
+                string errorMessage;
                 if (ex.Message.Contains("EMAIL_EXISTS"))
                     errorMessage = "This email already exists!";
                 else if (ex.Message.Contains("WEAK_PASSWORD"))

@@ -63,7 +63,6 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!--  edit list button  -->
         <Grid
             Grid.Row="1"
             Padding="24,40"

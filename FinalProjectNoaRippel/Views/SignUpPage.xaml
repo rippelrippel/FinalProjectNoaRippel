@@ -17,7 +17,6 @@
         </Style>
     </ContentPage.Resources>
 
-    <!--  עוטפים הכל ב-Grid אחד  -->
     <Grid>
         <Grid ColumnDefinitions="*,8*,*" RowDefinitions="*,4*,*">
             <HorizontalStackLayout
@@ -147,7 +146,6 @@
             </VerticalStackLayout>
         </Grid>
 
-        <!--  מסך טעינה  -->
         <Grid
             HorizontalOptions="Fill"
             IsVisible="{Binding IsBusy}"

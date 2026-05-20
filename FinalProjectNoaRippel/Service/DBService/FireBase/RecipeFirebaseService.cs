@@ -28,7 +28,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 .Child("categories")
                 .OnceAsync<FoodCategoryData>();
 
-            return categories.FirstOrDefault(c => c.Object.Name == categoryName)?.Key;
+            return categories.FirstOrDefault(c => c.Object.Name?.Trim() == categoryName?.Trim())?.Key;
         }
 
         // שומר מתכון חדש
@@ -37,67 +37,55 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
             var categoryKey = await GetCategoryKeyAsync(uid, categoryName);
             if (categoryKey == null) return null;
 
-            // שומר את המתכון ברשימה
-            var recipeResult = await _db
+            recipe.CategoryName = categoryName;
+            recipe.CreatedDate = DateTime.Now;
+            recipe.UpdatedDate = DateTime.Now;
+
+            // שומר הכל במקום אחד
+            var result = await _db
                 .Child("users")
                 .Child(uid)
                 .Child("categories")
                 .Child(categoryKey)
                 .Child("recipes")
-                .PostAsync(new
-                {
-                    Name = recipe.Name,
-                    ImageSource = recipe.ImageSource ?? "nophoto.jpeg"
-                });
+                .PostAsync(recipe);
 
-            recipe.Id = recipeResult.Key;
-
-            // שומר את פרטי המתכון
+            // שומר את ה-Id שנוצר חזרה לתוך הרשומה
+            recipe.Id = result.Key;
             await _db
                 .Child("users")
                 .Child(uid)
                 .Child("categories")
                 .Child(categoryKey)
-                .Child("recipeDetails")
-                .Child(recipe.Name!)
-                .PutAsync(new
-                {
-                    Name = recipe.Name,
-                    ImageSource = recipe.ImageSource,
-                    CategoryName = categoryName,
-                    UserId = uid,
-                    Ingredients = recipe.Ingredients ?? new List<string>(),
-                    Instructions = recipe.Instructions ?? new List<string>(),
-                    CreatedDate = recipe.CreatedDate,
-                    UpdatedDate = recipe.UpdatedDate
-                });
+                .Child("recipes")
+                .Child(result.Key)
+                .PutAsync(recipe);
 
-            return recipeResult.Key;
+            return result.Key;
         }
 
-        // טוען פרטי מתכון
+        // טוען פרטי מתכון לפי שם
         public async Task<Recipe?> GetRecipeAsync(string uid, string categoryName, string recipeName)
         {
             var categoryKey = await GetCategoryKeyAsync(uid, categoryName);
             if (categoryKey == null) return null;
 
-            var details = await _db
+            var recipes = await _db
                 .Child("users")
                 .Child(uid)
                 .Child("categories")
                 .Child(categoryKey)
-                .Child("recipeDetails")
-                .Child(recipeName)
-                .OnceSingleAsync<Recipe>();
+                .Child("recipes")
+                .OnceAsync<Recipe>();
 
-            return details;
+            return recipes.FirstOrDefault(r => r.Object.Name == recipeName)?.Object;
         }
 
-        // מעדכן מתכון קיים
+        // מעדכן מתכון קיים לפי recipeKey
         public async Task UpdateRecipeAsync(string uid, string categoryName, Recipe recipe)
         {
             var categoryKey = await GetCategoryKeyAsync(uid, categoryName);
-            if (categoryKey == null) return;
+            if (categoryKey == null || recipe.Id == null) return;
 
             recipe.UpdatedDate = DateTime.Now;
 
@@ -106,28 +94,17 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 .Child(uid)
                 .Child("categories")
                 .Child(categoryKey)
-                .Child("recipeDetails")
-                .Child(recipe.Name!)
-                .PutAsync(new
-                {
-                    Name = recipe.Name,
-                    ImageSource = recipe.ImageSource,
-                    CategoryName = categoryName,
-                    UserId = uid,
-                    Ingredients = recipe.Ingredients ?? new List<string>(),
-                    Instructions = recipe.Instructions ?? new List<string>(),
-                    CreatedDate = recipe.CreatedDate,
-                    UpdatedDate = recipe.UpdatedDate
-                });
+                .Child("recipes")
+                .Child(recipe.Id)
+                .PutAsync(recipe);
         }
 
-        // מוחק מתכון
-        public async Task DeleteRecipeAsync(string uid, string categoryName, string recipeKey, string recipeName)
+        // מוחק מתכון לפי recipeKey
+        public async Task DeleteRecipeAsync(string uid, string categoryName, string recipeKey)
         {
             var categoryKey = await GetCategoryKeyAsync(uid, categoryName);
             if (categoryKey == null) return;
 
-            // מוחק מרשימת המתכונים
             await _db
                 .Child("users")
                 .Child(uid)
@@ -135,16 +112,6 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 .Child(categoryKey)
                 .Child("recipes")
                 .Child(recipeKey)
-                .DeleteAsync();
-
-            // מוחק את פרטי המתכון
-            await _db
-                .Child("users")
-                .Child(uid)
-                .Child("categories")
-                .Child(categoryKey)
-                .Child("recipeDetails")
-                .Child(recipeName)
                 .DeleteAsync();
         }
 
@@ -159,7 +126,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 .Child(uid)
                 .Child("categories")
                 .Child(categoryKey)
-                .Child("recipeDetails")
+                .Child("recipes")
                 .OnceAsync<Recipe>();
 
             return recipes.Select(r => r.Object).ToList();

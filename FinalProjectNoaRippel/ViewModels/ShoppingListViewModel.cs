@@ -31,10 +31,8 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 if (item != null)
                 {
-                    // מסיר מהרשימה הנראית על המסך
                     Items.Remove(item);
 
-                    // מוחק מהפייר בייס לפי מפתח
                     await _db
                         .Child("users")
                         .Child(_uid)
@@ -76,20 +74,16 @@ namespace FinalProjectNoaRippel.ViewModels
             }
             catch { }
         }
-        // שומר מרכיב מוסיף בתצוגה
         public async Task AddIngredientAsync(string text)
         {
-            // לא מוסיף פעמיים
             if (Items.Any(i => i.Text == text)) return;
 
-            // שומר ב-Firebase כ-object עם שדה Text
             var result = await _db
                 .Child("users")
                 .Child(_uid)
                 .Child("shoppingList")
                 .PostAsync(new { Text = text });
 
-            // מוסיף לרשימה עם ה-Key שקיבלנו מ-Firebase
             Items.Add(new ShoppingItem { Key = result.Key, Text = text });
         }
         public static void AddIngredient(string text)

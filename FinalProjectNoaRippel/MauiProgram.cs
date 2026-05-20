@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using FinalProjectNoaRippel.Service;
-using FinalProjectNoaRippel.Service.DBService.DBMokup;
 using FinalProjectNoaRippel.ViewModels;
 using FinalProjectNoaRippel.Views;
 using Microsoft.Extensions.Logging;
@@ -22,14 +20,11 @@ namespace FinalProjectNoaRippel
                     fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
                 });
 
-            // ── Services (Singleton: one instance for the entire app lifetime) ──────
-            //builder.Services.AddSingleton<IDBService, FirebaseService>();
-
-            // ── Shell (Singleton: only one shell) ────────────────────────────────────
+            // ── Shell ────────────────────────────────────────────────────────────────
             builder.Services.AddSingleton<AppShell>();
             builder.Services.AddSingleton<AppShellViewModel>();
 
-            // ── Pages (Transient: fresh instance on every navigation) ─────────────────
+            // ── Pages ─────────────────────────────────────────────────────────────────
             builder.Services.AddTransient<SignInPage>();
             builder.Services.AddTransient<SignUpPage>();
             builder.Services.AddTransient<AdminPage>();
@@ -42,8 +37,11 @@ namespace FinalProjectNoaRippel
             builder.Services.AddTransient<EditRecipePage>();
             builder.Services.AddTransient<ShoppingListPage>();
             builder.Services.AddTransient<EditShoppingListPage>();
+            builder.Services.AddTransient<BlogPage>();
+            builder.Services.AddTransient<BlogRecipePage>();
+            builder.Services.AddTransient<AddBlogRecipePage>();
 
-            // MainPage is registered as Singleton so the Shell can reuse it
+            // MainPage is Singleton so Shell can reuse it
             builder.Services.AddSingleton<MainPageView>();
 
             // ── ViewModels ────────────────────────────────────────────────────────────
@@ -60,6 +58,9 @@ namespace FinalProjectNoaRippel
             builder.Services.AddTransient<EditRecipeViewModel>();
             builder.Services.AddTransient<ShoppingListViewModel>();
             builder.Services.AddTransient<EditShoppingListViewModel>();
+            builder.Services.AddTransient<BlogViewModel>();
+            builder.Services.AddTransient<BlogRecipeViewModel>();
+            builder.Services.AddTransient<AddBlogRecipeViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

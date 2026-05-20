@@ -10,7 +10,6 @@ namespace FinalProjectNoaRippel
             InitializeComponent();
             BindingContext = vm;
 
-            // Register routes for Shell navigation
             Routing.RegisterRoute(nameof(Views.MainPageView), typeof(Views.MainPageView));
             Routing.RegisterRoute(nameof(Views.SignUpPage), typeof(Views.SignUpPage));
             Routing.RegisterRoute(nameof(Views.AdminPage), typeof(Views.AdminPage));
@@ -18,9 +17,9 @@ namespace FinalProjectNoaRippel
             Routing.RegisterRoute(nameof(Views.UserDetailsPage), typeof(Views.UserDetailsPage));
             Routing.RegisterRoute(nameof(Views.AddFoodPage), typeof(Views.AddFoodPage));
             Routing.RegisterRoute(nameof(Views.EditShoppingListPage), typeof(Views.EditShoppingListPage));
-
-            //Routing.RegisterRoute(nameof(Views.EditRecipePage), typeof(Views.EditRecipePage));
+            Routing.RegisterRoute(nameof(Views.BlogPage), typeof(Views.BlogPage));
+            Routing.RegisterRoute(nameof(Views.BlogRecipePage), typeof(Views.BlogRecipePage));
+            Routing.RegisterRoute(nameof(Views.AddBlogRecipePage), typeof(Views.AddBlogRecipePage));
         }
     }
-
 }

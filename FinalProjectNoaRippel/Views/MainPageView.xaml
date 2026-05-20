@@ -40,7 +40,6 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <!--  בלוק תמונה  -->
                             <Frame
                                 Padding="0"
                                 CornerRadius="8"
@@ -52,7 +51,6 @@
                                 </Frame.GestureRecognizers>
                                 <Image Aspect="AspectFill" Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}" />
                             </Frame>
-                            <!--  בלוק הוספה  -->
                             <Frame
                                 BackgroundColor="Wheat"
                                 CornerRadius="8"

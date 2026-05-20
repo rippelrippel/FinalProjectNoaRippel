@@ -1,14 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using FinalProjectNoaRippel.Helper;
 using FinalProjectNoaRippel.Service.DBService;
-using FinalProjectNoaRippel.Service.DBService.DBMokup;
 using FinalProjectNoaRippel.Service.DBService.FireBase;
 using FinalProjectNoaRippel.Views;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
@@ -30,7 +25,9 @@ namespace FinalProjectNoaRippel.ViewModels
         public SignInViewModel()
         {
             IAuthService authService = new FirebaseAuthService();
-            _db = new FirebaseUsersRepository(authService, null); ShowPasswordCommand = new Command(TogglePassword);
+            _db = new FirebaseUsersRepository(authService);
+
+            ShowPasswordCommand = new Command(TogglePassword);
             SignInCommand = new Command(async () => await OnSignInAsync());
             NavigateToSignUpCommand = new Command(() =>
             {
@@ -93,9 +90,8 @@ namespace FinalProjectNoaRippel.ViewModels
 
             try
             {
-                IsBusy = true; //Show progres bar
+                IsBusy = true;
                 var user = await _db.SignInAsync(UserName!, UserPassword!);
-                //Go to the MainPage
                 IsBusy = false;
 
                 (App.Current as App)!.CurrentUser = user;
@@ -112,7 +108,6 @@ namespace FinalProjectNoaRippel.ViewModels
                 LoginMessage = "Email or password is incorrect.";
                 SignInMessageVisible = true;
             }
-
         }
     }
 }

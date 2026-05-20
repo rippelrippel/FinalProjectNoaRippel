@@ -11,7 +11,6 @@
 
     <Grid RowDefinitions=".13*,.13*,.9*">
 
-        <!--  Header  -->
         <Grid ColumnDefinitions="7*,3*">
             <Label
                 Margin="80,0,0,0"
@@ -24,7 +23,6 @@
 
         </Grid>
 
-        <!--  Find & Filter Users 1: 10  -->
         <Grid Grid.Row="1" ColumnDefinitions="9*,1*">
             <SearchBar
                 Placeholder="find user"
@@ -39,13 +37,11 @@
                 Text="f" />
         </Grid>
 
-        <!--  Users Collection  -->
         <CollectionView
             Grid.Row="2"
             ItemsSource="{Binding AllUsers}"
             SelectionMode="None">
 
-            <!--  Empty View  -->
             <CollectionView.EmptyView>
                 <StackLayout
                     Padding="20"
@@ -86,7 +82,6 @@
                             RowDefinitions="Auto,Auto"
                             RowSpacing="5">
 
-                            <!--  Name Row  -->
                             <HorizontalStackLayout Grid.Row="0" Grid.Column="0">
                                 <Label
                                     FontAttributes="Bold"
@@ -104,7 +99,7 @@
                                     VerticalOptions="Center" />
                             </HorizontalStackLayout>
 
-                            <!--  Email  -->
+                            
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="0"

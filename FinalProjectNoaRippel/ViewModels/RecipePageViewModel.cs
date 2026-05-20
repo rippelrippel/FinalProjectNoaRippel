@@ -19,6 +19,7 @@ namespace FinalProjectNoaRippel.ViewModels
         private readonly FirebaseClient _db;
         private string? _recipeKey;
         private string? _categoryKey;
+        private Recipe? _currentRecipe;
 
         public string FoodName
         {
@@ -48,6 +49,7 @@ namespace FinalProjectNoaRippel.ViewModels
         public ICommand GoToEditCommand { get; }
         public ICommand ToggleIngredientCommand { get; }
         public ICommand AddToShoppingListCommand { get; }
+        public ICommand ShareToBlogCommand { get; }
 
         public RecipePageViewModel()
         {
@@ -90,6 +92,46 @@ namespace FinalProjectNoaRippel.ViewModels
                         .PostAsync(new { Text = item.Text });
                 }
             });
+
+            ShareToBlogCommand = new Command(async () =>
+            {
+                if (_currentRecipe == null) return;
+
+                var user = (App.Current as App)?.CurrentUser;
+                var uid = user?.Id ?? "";
+
+                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                    "שיתוף לבלוג",
+                    $"לשתף את \"{RecipeName}\" לבלוג?",
+                    "כן, שתף",
+                    "ביטול");
+
+                if (!confirmed) return;
+
+                try
+                {
+                    var blogRecipe = new BlogRecipeItem
+                    {
+                        Name = _currentRecipe.Name,
+                        ImageSource = _currentRecipe.ImageSource,
+                        AuthorName = $"{user?.FirstName} {user?.LastName}",
+                        AuthorId = uid,
+                        Ingredients = _currentRecipe.Ingredients ?? new(),
+                        Instructions = _currentRecipe.Instructions ?? new(),
+                        CreatedDate = DateTime.Now
+                    };
+
+                    var result = await _db.Child("blog").PostAsync(blogRecipe);
+                    blogRecipe.Key = result.Key;
+                    await _db.Child("blog").Child(result.Key).PutAsync(blogRecipe);
+
+                    await Application.Current!.MainPage!.DisplayAlert("הצלחה", "המתכון שותף לבלוג!", "אוקי");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert("שגיאה", ex.Message, "אוקי");
+                }
+            });
         }
 
         public string RecipeName { get; set; } = "";
@@ -119,6 +161,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (recipe == null) return;
 
                 _recipeKey = recipe.Key;
+                _currentRecipe = recipe.Object;
                 RecipeName = recipe.Object.Name ?? foodName;
 
                 Ingredients.Clear();

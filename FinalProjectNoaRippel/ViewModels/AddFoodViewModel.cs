@@ -67,7 +67,6 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 var newCategory = new FoodCategory
                 {
-                    // תוקן: Trim() כדי למנוע רווחים מיותרים בשמירה
                     Name = FoodName.Trim(),
                     ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
