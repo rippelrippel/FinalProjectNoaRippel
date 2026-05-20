@@ -10,7 +10,6 @@ using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
-    // מקבל את שם המתכון ושם הקטגוריה מהניווט
     [QueryProperty(nameof(FoodName), "FoodName")]
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class EditRecipeViewModel : ViewModelBase
@@ -23,7 +22,6 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public static string? CurrentFoodName { get; private set; }
 
-        // שם המתכון שמגיע מהניווט - ברגע שמגיע טוען את המתכון
         public string? FoodName
         {
             get => _foodName;
@@ -37,32 +35,31 @@ namespace FinalProjectNoaRippel.ViewModels
             }
         }
 
-        // שם הקטגוריה - נשמר כדי לדעת לאן לחזור אחרי השמירה
         public string? CategoryName
         {
             get => _categoryName;
-            set 
+            set
             {
-                _categoryName = value; 
-                OnPropertyChanged(); 
+                _categoryName = value;
+                OnPropertyChanged();
                 if (!string.IsNullOrEmpty(_foodName))
                     _ = LoadRecipeAsync(_foodName!);
             }
         }
 
-        // שם המתכון שהמשתמש יכול לערוך
         public string? RecipeName
         {
             get => _recipeName;
             set { _recipeName = value; OnPropertyChanged(); }
         }
 
-        // רשימות המרכיבים וההוראות שהמשתמש יכול לערוך
         public ObservableCollection<IngredientItem> Ingredients { get; set; } = new();
         public ObservableCollection<IngredientItem> Instructions { get; set; } = new();
 
         public ICommand AddIngredientCommand { get; }
         public ICommand AddInstructionCommand { get; }
+        public ICommand RemoveIngredientCommand { get; }
+        public ICommand RemoveInstructionCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand GoBackCommand { get; }
 
@@ -70,16 +67,21 @@ namespace FinalProjectNoaRippel.ViewModels
         {
             _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
-
-            // מוסיף שורה ריקה חדשה לרשימת המרכיבים
             AddIngredientCommand = new Command(() => Ingredients.Add(new IngredientItem()));
-
-            // מוסיף שורה ריקה חדשה לרשימת ההוראות
             AddInstructionCommand = new Command(() => Instructions.Add(new IngredientItem()));
+
+            RemoveIngredientCommand = new Command<IngredientItem>(item =>
+            {
+                if (item != null) Ingredients.Remove(item);
+            });
+
+            RemoveInstructionCommand = new Command<IngredientItem>(item =>
+            {
+                if (item != null) Instructions.Remove(item);
+            });
 
             SaveCommand = new Command(async () =>
             {
-                // אם השם ריק לא שומר
                 if (string.IsNullOrWhiteSpace(RecipeName) || string.IsNullOrWhiteSpace(FoodName))
                     return;
 
@@ -93,24 +95,25 @@ namespace FinalProjectNoaRippel.ViewModels
                         .Child("categories")
                         .OnceAsync<FoodCategoryData>();
 
-                    var cat = categories.FirstOrDefault(c => c.Object.Name == _categoryName);
+                    var cat = categories.FirstOrDefault(c => c.Object.Name?.Trim() == _categoryName?.Trim());
                     if (cat == null) return;
                     _categoryKey = cat.Key;
                 }
 
                 await _db
-                   .Child("users")
-                   .Child(uid)
-                   .Child("categories")
-                   .Child(_categoryKey)
-                   .Child("recipeDetails")
-                   .Child(_foodName!)
-                   .PutAsync(new
-                   {
-                       Name = RecipeName,
-                       Ingredients = Ingredients.Select(i => i.Text).ToList(),
-                       Instructions = Instructions.Select(i => i.Text).ToList()
-                   });
+                    .Child("users")
+                    .Child(uid)
+                    .Child("categories")
+                    .Child(_categoryKey)
+                    .Child("recipeDetails")
+                    .Child(_foodName!)
+                    .PutAsync(new
+                    {
+                        Name = RecipeName,
+                        Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                        Instructions = Instructions.Select(i => i.Text).ToList()
+                    });
+
                 await Shell.Current.GoToAsync($"///RecipePage?FoodName={FoodName}&CategoryName={CategoryName}");
             });
 
@@ -126,28 +129,24 @@ namespace FinalProjectNoaRippel.ViewModels
                 if (confirmed)
                     await Shell.Current.GoToAsync($"///RecipePage?FoodName={_foodName}&CategoryName={_categoryName}");
             });
-
         }
 
-        // טוען את נתוני המתכון הקיים 
         private async Task LoadRecipeAsync(string foodName)
         {
             try
             {
                 var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
 
-                // מוצא את הקטגוריה
                 var categories = await _db
                     .Child("users")
                     .Child(uid)
                     .Child("categories")
                     .OnceAsync<FoodCategoryData>();
 
-                var category = categories.FirstOrDefault(c => c.Object.Name == _categoryName);
+                var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == _categoryName?.Trim());
                 if (category == null) return;
                 _categoryKey = category.Key;
 
-                // טוען את פרטי המתכון
                 var details = await _db
                     .Child("users")
                     .Child(uid)
@@ -170,8 +169,6 @@ namespace FinalProjectNoaRippel.ViewModels
                     Instructions.Add(new IngredientItem { Text = i });
             }
             catch { }
-
         }
-
     }
 }

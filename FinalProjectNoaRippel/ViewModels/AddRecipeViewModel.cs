@@ -3,10 +3,8 @@ using Firebase.Database;
 using Firebase.Database.Query;
 using Microsoft.Maui.Graphics.Platform;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -21,7 +19,6 @@ namespace FinalProjectNoaRippel.ViewModels
             set { _text = value; OnPropertyChanged(); }
         }
     }
-
 
     [QueryProperty(nameof(FoodName), "FoodName")]
     [QueryProperty(nameof(CategoryName), "CategoryName")]
@@ -85,8 +82,6 @@ namespace FinalProjectNoaRippel.ViewModels
                     using var ms = new MemoryStream();
                     await stream.CopyToAsync(ms);
                     var originalBytes = ms.ToArray();
-
-                    // דוחס את התמונה
                     var compressedBytes = await CompressImageAsync(originalBytes);
                     SelectedImage = Convert.ToBase64String(compressedBytes);
                     HasImage = true;
@@ -101,45 +96,52 @@ namespace FinalProjectNoaRippel.ViewModels
                 var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
                 var db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
-                // מחפש ומוצא את הקטגוריה הנכונה לפי המפתח
                 var categories = await db
                     .Child("users")
                     .Child(uid)
                     .Child("categories")
                     .OnceAsync<FoodCategoryData>();
 
-                var category = categories.FirstOrDefault(c => c.Object.Name == FoodName);
+                var categoryNames = string.Join(", ", categories.Select(c => c.Object.Name));
+
+                var category = categories.FirstOrDefault(c => c.Object.Name?.Trim() == FoodName?.Trim());
                 if (category == null) return;
+                
+                try
+                {
 
-                //שומר בממסד נתונים
-                var recipeResult = await db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(category.Key)
-                    .Child("recipes")
-                    .PostAsync(new
-                    {
-                        Name = RecipeName,
-                        ImageSource = SelectedImage ?? "nophoto.jpeg"
-                    });
+                    await db
+                        .Child("users")
+                        .Child(uid)
+                        .Child("categories")
+                        .Child(category.Key)
+                        .Child("recipes")
+                        .PostAsync(new
+                        {
+                            Name = RecipeName,
+                            ImageSource = SelectedImage ?? "nophoto.jpeg"
+                        });
 
-                // שומר את המרכיבים וההוראות
-                await db
-                    .Child("users")
-                    .Child(uid)
-                    .Child("categories")
-                    .Child(category.Key)
-                    .Child("recipeDetails")
-                    .Child(RecipeName!)
-                    .PutAsync(new
-                    {
-                        Name = RecipeName,
-                        Ingredients = Ingredients.Select(i => i.Text).ToList(),
-                        Instructions = Instructions.Select(i => i.Text).ToList()
-                    });
+                    await db
+                        .Child("users")
+                        .Child(uid)
+                        .Child("categories")
+                        .Child(category.Key)
+                        .Child("recipeDetails")
+                        .Child(RecipeName!)
+                        .PutAsync(new
+                        {
+                            Name = RecipeName,
+                            Ingredients = Ingredients.Select(i => i.Text).ToList(),
+                            Instructions = Instructions.Select(i => i.Text).ToList()
+                        });
 
-                await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
+                    await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert("שגיאה", ex.Message, "אוקי");
+                }
             });
         }
 

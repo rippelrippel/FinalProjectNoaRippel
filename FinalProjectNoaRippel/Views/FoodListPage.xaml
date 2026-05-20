@@ -44,7 +44,7 @@
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectFoodCommand}" CommandParameter="{Binding .}" />
                                     </Frame.GestureRecognizers>
                                     <Grid>
-                                        <Image Aspect="AspectFill" Source="{Binding ImageSource}" />
+                                        <Image Aspect="AspectFill" Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}" />
                                         <Label
                                             Margin="0,0,0,8"
                                             FontAttributes="Bold"

@@ -1,21 +1,17 @@
-﻿using FinalProjectNoaRippel.Models;
-using FinalProjectNoaRippel.Service;
-using FinalProjectNoaRippel.Service.DBService.DBMokup;
-using System;
-using System.Collections.Generic;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using FinalProjectNoaRippel.Models;
+using FinalProjectNoaRippel.Service.DBService.FireBase;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
     public class UsersListViewModel : ViewModelBase
     {
-        private string? _searchText; //Text entered in the search bar
-        private List<User> _allUsersCache = new(); //List of users to be displayed
-        private readonly IDBService _db;
-
+        private readonly FirebaseClient _db;
+        private string? _searchText;
+        private List<User> _allUsersCache = new();
 
         public string? SearchText
         {
@@ -27,42 +23,51 @@ namespace FinalProjectNoaRippel.ViewModels
                 ClearFilterCommand?.ChangeCanExecute();
             }
         }
-        public ObservableCollection<User> AllUsers { get; set; }
 
-
+        public ObservableCollection<User> AllUsers { get; set; } = new();
         public Command? SearchCommand { get; }
         public Command? ClearFilterCommand { get; }
         public Command? GetAllUsersCommand { get; }
         public Command<User>? UserDetailsPageCommand { get; }
 
-        public UsersListViewModel(IDBService db)
+        public UsersListViewModel()
         {
-            _db = db;
-            AllUsers = new ObservableCollection<User>(); // ← ADD THIS
+            _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
             SearchCommand = new Command(OnSearch);
-            GetAllUsersCommand = new Command(LoadAllUsers);
+            GetAllUsersCommand = new Command(async () => await LoadAllUsersAsync());
             ClearFilterCommand = new Command(ClearFilter, () => !string.IsNullOrEmpty(SearchText));
             UserDetailsPageCommand = new Command<User>(GoToAccountPage);
+
         }
-        private void LoadAllUsers()
+
+        private async Task LoadAllUsersAsync()
         {
-            _allUsersCache = _db.Users.ToList();
-            AllUsers.Clear();
-            foreach (var user in _allUsersCache)
-                AllUsers.Add(user);
+            try
+            {
+                var users = await _db
+                    .Child("users")
+                    .OnceAsync<User>();
+
+                _allUsersCache = users.Select(u => u.Object).ToList();
+                AllUsers.Clear();
+                foreach (var user in _allUsersCache)
+                    AllUsers.Add(user);
+            }
+            catch { }
         }
+
         private void ClearFilter()
         {
             SearchText = string.Empty;
-            LoadAllUsers();
+            _ = LoadAllUsersAsync();
         }
 
         private void OnSearch()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                LoadAllUsers();
+                _ = LoadAllUsersAsync();
                 return;
             }
 

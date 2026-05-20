@@ -54,8 +54,6 @@ namespace FinalProjectNoaRippel.ViewModels
                     using var ms = new MemoryStream();
                     await stream.CopyToAsync(ms);
                     var originalBytes = ms.ToArray();
-
-                    // דוחס את התמונה
                     var compressedBytes = await CompressImageAsync(originalBytes);
                     SelectedImage = Convert.ToBase64String(compressedBytes);
                     HasImage = true;
@@ -69,7 +67,8 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 var newCategory = new FoodCategory
                 {
-                    Name = FoodName,
+                    // תוקן: Trim() כדי למנוע רווחים מיותרים בשמירה
+                    Name = FoodName.Trim(),
                     ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
 

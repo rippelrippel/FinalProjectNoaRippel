@@ -1,23 +1,20 @@
-﻿using FinalProjectNoaRippel.Models;
-using FinalProjectNoaRippel.Service;
-using FinalProjectNoaRippel.Service.DBService.DBMokup;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using FinalProjectNoaRippel.Models;
+using System.Windows.Input;
 
 namespace FinalProjectNoaRippel.ViewModels
 {
     public class UserDetailsPageViewModel : ViewModelBase, IQueryAttributable
     {
-        private readonly IDBService _db;
+        private readonly FirebaseClient _db;
         private User? _selectedUser;
         private string? _firstName;
         private string? _lastName;
         private string? _email;
         private string? _mobile;
         private bool _isDeleteVisible;
+
         public string? FirstName
         {
             get => _firstName;
@@ -47,20 +44,24 @@ namespace FinalProjectNoaRippel.ViewModels
         public Command UpdateCommand { get; }
         public Command DeleteCommand { get; }
 
-        public UserDetailsPageViewModel(IDBService db)
+        public UserDetailsPageViewModel()
         {
-            _db = db;
-            UpdateCommand = new Command(OnUpdate);
-            DeleteCommand = new Command(OnDelete);
+            _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
+
+            UpdateCommand = new Command(async () => await OnUpdateAsync());
+            DeleteCommand = new Command(async () => await OnDeleteAsync());
 
             FillUserDetails();
         }
+
         private void FillUserDetails()
         {
-            FirstName = (App.Current as App)!.CurrentUser!.FirstName;
-            LastName = (App.Current as App)!.CurrentUser!.LastName;
-            Email = (App.Current as App)!.CurrentUser!.UserEmail;
-            Mobile = (App.Current as App)!.CurrentUser!.UserMobile;
+            var user = (App.Current as App)?.CurrentUser;
+            if (user == null) return;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Email = user.UserEmail;
+            Mobile = user.UserMobile;
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -80,46 +81,60 @@ namespace FinalProjectNoaRippel.ViewModels
             Email = user.UserEmail;
             Mobile = user.UserMobile;
 
-            // Only Admin users can see (and use) the Delete button
             var currentUser = (App.Current as App)?.CurrentUser;
             IsDeleteVisible = currentUser?.IsAdmin == true;
         }
 
-        private async void OnUpdate()
+        private async Task OnUpdateAsync()
         {
-            _selectedUser = new User
-            {
+            if (_selectedUser == null) return;
 
-                Id = (App.Current as App)!.CurrentUser!.Id,
+            var updatedUser = new User
+            {
+                Id = _selectedUser.Id,
                 FirstName = FirstName,
                 LastName = LastName,
                 UserEmail = Email,
                 UserMobile = Mobile,
-                UserPassword = (App.Current as App)!.CurrentUser!.UserPassword,
-                RegDate = (App.Current as App)!.CurrentUser!.RegDate,
+                UserPassword = _selectedUser.UserPassword,
+                RegDate = _selectedUser.RegDate,
                 UBDate = DateTime.Now,
-                IsAdmin = (App.Current as App)!.CurrentUser!.IsAdmin
+                IsAdmin = _selectedUser.IsAdmin
             };
 
+            // מעדכן ב-Firebase
+            await _db
+                .Child("users")
+                .Child(_selectedUser.Id!)
+                .PutAsync(updatedUser);
 
-            _db.UpdateUser(_selectedUser);
-
-            //if from current user and not from userslist - update current user data in app
-            (App.Current as App)!.CurrentUser = _selectedUser;
-
+            // מעדכן את המשתמש הנוכחי אם זה הוא
+            var currentUser = (App.Current as App)?.CurrentUser;
+            if (currentUser?.Id == _selectedUser.Id)
+                (App.Current as App)!.CurrentUser = updatedUser;
 
             await Shell.Current.DisplayAlert("Success", "User updated successfully.", "OK");
-            //await Shell.Current.GoToAsync("//MainPage");
         }
 
-        private async void OnDelete()
+        private async Task OnDeleteAsync()
         {
             if (_selectedUser == null) return;
-            bool confirmed = await Shell.Current.DisplayAlert("Delete User", $"Are you sure you want to delete {_selectedUser.FirstName} {_selectedUser.LastName}?", "Yes", "No");
+
+            bool confirmed = await Shell.Current.DisplayAlert(
+                "Delete User",
+                $"Are you sure you want to delete {_selectedUser.FirstName} {_selectedUser.LastName}?",
+                "Yes", "No");
+
             if (!confirmed) return;
-            _db.RemoveUser(_selectedUser);
+
+            // מוחק מ-Firebase
+            await _db
+                .Child("users")
+                .Child(_selectedUser.Id!)
+                .DeleteAsync();
+
             await Shell.Current.DisplayAlert("Deleted", "User deleted successfully.", "OK");
-            //await Shell.Current.GoToAsync("//MainPage");
+            await Shell.Current.GoToAsync("///UsersListPage");
         }
     }
 }

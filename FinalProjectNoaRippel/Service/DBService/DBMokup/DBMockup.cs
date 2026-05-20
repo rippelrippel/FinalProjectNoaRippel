@@ -18,7 +18,7 @@ namespace FinalProjectNoaRippel.Service.DBService.DBMokup
             _users.Add(new User { Id = "1", FirstName = "Noa", LastName = "Rippel", UserEmail = "Rip@gmail.com", UserPassword = "rip", IsAdmin = false, UserMobile = "0501234567" });
             _users.Add(new User { Id = "3", FirstName = "sim", LastName = "rit", UserEmail = "rit@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545506265" });
             _users.Add(new User { Id = "4", FirstName = "ban", LastName = "ana", UserEmail = "ban@gmail.com", UserPassword = "123", IsAdmin = false, UserMobile = "0545520686" });
-            _users.Add(new User { Id = "2", FirstName = "admin", LastName = "admin", UserEmail = "admin@gmail.com", UserPassword = "admin", IsAdmin = true, UserMobile = "0509876543" });
+            _users.Add(new User { Id = "2", FirstName = "admin", LastName = "admin", UserEmail = "admin@gmail.com", UserPassword = "admin1", IsAdmin = true, UserMobile = "0509876543" });
         }
         public bool IsExist(string uEmail, string uPass)
         {

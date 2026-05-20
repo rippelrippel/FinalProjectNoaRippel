@@ -92,7 +92,8 @@ namespace FinalProjectNoaRippel.ViewModels
                 .Child("categories")
                 .PostAsync(new FoodCategoryData
                 {
-                    Name = category.Name,
+                    // תוקן: Trim() כדי למנוע רווחים מיותרים בשמירה
+                    Name = category.Name?.Trim(),
                     ImageSource = category.ImageSource
                 });
 
@@ -105,7 +106,8 @@ namespace FinalProjectNoaRippel.ViewModels
             var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
             if (string.IsNullOrEmpty(uid)) return;
 
-            var item = FoodCategories.FirstOrDefault(f => f.Name == categoryName);
+            // תוקן: Trim() כדי להתמודד עם רווחים מיותרים בשמות קטגוריות
+            var item = FoodCategories.FirstOrDefault(f => f.Name?.Trim() == categoryName?.Trim());
             if (item?.Key == null) return;
 
             await _db

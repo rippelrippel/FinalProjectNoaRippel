@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:FinalProjectNoaRippel.Models"
              xmlns:viewmodels="clr-namespace:FinalProjectNoaRippel.ViewModels"
              x:DataType="viewmodels:UsersListViewModel"
-
+             BackgroundColor="White"
              Title="UsersListPage">
 
 
@@ -19,7 +19,7 @@
                 FontSize="30"
                 HorizontalOptions="Center"
                 Text="Users List"
-                TextColor="CadetBlue"
+                TextColor="#28396C"
                 VerticalOptions="Center" />
 
         </Grid>
@@ -28,6 +28,7 @@
         <Grid Grid.Row="1" ColumnDefinitions="9*,1*">
             <SearchBar
                 Placeholder="find user"
+                TextColor="#28396C"
                 SearchCommand="{Binding SearchCommand}"
                 Text="{Binding SearchText}" />
 
@@ -35,7 +36,7 @@
                 Grid.Column="1"
                 Margin="0,0,0,15"
                 Background="Transparent"
-                Text="M" />
+                Text="f" />
         </Grid>
 
         <!--  Users Collection  -->
@@ -55,14 +56,14 @@
                         FontSize="24"
                         HorizontalTextAlignment="Center"
                         Text="Users not found!"
-                        TextColor="Gray" />
+                        TextColor="#28396C" />
 
                     <Label
                         Margin="0,0,0,100"
                         FontSize="24"
                         HorizontalTextAlignment="Center"
                         Text="Pull down to refresh"
-                        TextColor="Gray" />
+                        TextColor="#28396C" />
 
                 </StackLayout>
             </CollectionView.EmptyView>
@@ -72,7 +73,7 @@
                         Margin="15,7"
                         Padding="15"
                         BackgroundColor="White"
-                        Stroke="LightGray"
+                        Stroke="#28396C"
                         StrokeShape="RoundRectangle 10">
 
                         <Border.GestureRecognizers>
@@ -91,7 +92,7 @@
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     Text="{Binding FirstName}"
-                                    TextColor="Gray"
+                                    TextColor="#28396C"
                                     VerticalOptions="Center" />
 
                                 <Label
@@ -99,7 +100,7 @@
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     Text="{Binding LastName}"
-                                    TextColor="Gray"
+                                    TextColor="#28396C"
                                     VerticalOptions="Center" />
                             </HorizontalStackLayout>
 
@@ -109,7 +110,7 @@
                                 Grid.Column="0"
                                 FontSize="13"
                                 Text="{Binding UserEmail}"
-                                TextColor="Gray"
+                                TextColor="#28396C"
                                 VerticalOptions="Center" />
 
 

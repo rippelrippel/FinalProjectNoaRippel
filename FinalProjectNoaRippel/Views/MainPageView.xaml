@@ -1,10 +1,11 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
-             x:Class="FinalProjectNoaRippel.Views.MainPageView"
-             BackgroundColor="white"
-             Title="">
+<ContentPage
+    x:Class="FinalProjectNoaRippel.Views.MainPageView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:helper="clr-namespace:FinalProjectNoaRippel.Helper"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title=""
+    BackgroundColor="white">
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter" />
@@ -16,56 +17,61 @@
             <Label
                 FontAttributes="Bold"
                 FontSize="26"
-                Text="חסר: 1.פיר ביס ברגע שיש אותו לסדר את הקטע שישמרו המתכונים לכל משתמש כל משתמש יהיה דברים משלו 2. לסדר אדמין להביןמה אני רוצה שהוא יעשה 3. תמונה שונה למאכלים הבסיסים 4. ואחרון עיצוב!!!"
-                TextColor="Black"
-                HorizontalOptions="Center"/>
+                HorizontalOptions="Center"
+                Text="Your recipes"
+                TextColor="Black" />
             <BoxView
-                HeightRequest="2.5"
+                Margin="0,6,0,0"
                 BackgroundColor="#38396C"
-                Margin="0,6,0,0" />
+                HeightRequest="2.5" />
             <Border
                 Padding="5"
-                StrokeShape="RoundRectangle 8"
                 Stroke="Transparent"
-                StrokeThickness="1">
-            </Border>
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1" />
             <CollectionView ItemsSource="{Binding FoodCategories}">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                    <GridItemsLayout
+                        HorizontalItemSpacing="10"
+                        Orientation="Vertical"
+                        Span="2"
+                        VerticalItemSpacing="10" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <!-- בלוק תמונה -->
+                            <!--  בלוק תמונה  -->
                             <Frame
-                                IsVisible="{Binding IsAddButton, Converter={StaticResource InverseBoolConverter}}"
                                 Padding="0"
                                 CornerRadius="8"
+                                HeightRequest="150"
                                 IsClippedToBounds="True"
-                                HeightRequest="150">
+                                IsVisible="{Binding IsAddButton, Converter={StaticResource InverseBoolConverter}}">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}" CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
-                                <Image
-                                    Aspect="AspectFill"
-                                    Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}" />
+                                <Image Aspect="AspectFill" Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}" />
                             </Frame>
-                            <!-- בלוק הוספה -->
+                            <!--  בלוק הוספה  -->
                             <Frame
-                                IsVisible="{Binding IsAddButton}"
-                                CornerRadius="8"
                                 BackgroundColor="Wheat"
-                                HeightRequest="150">
+                                CornerRadius="8"
+                                HeightRequest="150"
+                                IsVisible="{Binding IsAddButton}">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NavigateCommand}" CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
-                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                                    <Label Text="+" FontSize="40" HorizontalOptions="Center" TextColor="#555" />
-                                    <Label Text="הוסף מאכל" FontSize="14" HorizontalOptions="Center" TextColor="#555" />
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label
+                                        FontSize="40"
+                                        HorizontalOptions="Center"
+                                        Text="+"
+                                        TextColor="#555" />
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalOptions="Center"
+                                        Text="הוסף מאכל"
+                                        TextColor="#555" />
                                 </VerticalStackLayout>
                             </Frame>
                         </Grid>

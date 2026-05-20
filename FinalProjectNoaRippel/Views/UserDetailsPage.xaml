@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FinalProjectNoaRippel.Views.UserDetailsPage"
-             xmlns:vm="clr-namespace:FinalProjectNoaRippel.ViewModels"
-             x:DataType="vm:UserDetailsPageViewModel">
-    
-    
-    <ContentPage.Background>
-        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Offset="0.0" Color="#C6426E" />
-            <GradientStop Offset="1.0" Color="#642B73" />
-        </LinearGradientBrush>
-    </ContentPage.Background>
+<ContentPage
+    x:Class="FinalProjectNoaRippel.Views.UserDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:FinalProjectNoaRippel.ViewModels"
+    x:DataType="vm:UserDetailsPageViewModel"
+    BackgroundColor="White">
+
     <Grid>
 
-
         <ScrollView>
-            <VerticalStackLayout Padding="32,70,32,40" Spacing="14">
-
-                <ImageButton
-                    BackgroundColor="Transparent"
-                    Command="{Binding DeleteCommand}"
-                    HeightRequest="36"
-                    HorizontalOptions="End"
-                    IsVisible="{Binding IsDeleteVisible}"
-                    Margin="0,14,14,0"
-                    Source="trash.png"
-                    VerticalOptions="Start"
-                    WidthRequest="36" />
+            <VerticalStackLayout Padding="32,30,32,40" Spacing="14">
+                <HorizontalStackLayout
+                Grid.Column="1"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                    <Label
+                    FontSize="24"
+                    Text="About Account"
+                    TextColor="#28396C" />
+                </HorizontalStackLayout>
+                <Border Margin="0,0,0,22">
+                   
+                </Border>
+                
                 <Border
                     Padding="16,0"
-                    BackgroundColor="#80FFFFFF"
+                    BackgroundColor="#28396C"
                     Stroke="White"
                     StrokeShape="RoundRectangle 10"
                     StrokeThickness="1.5">
@@ -38,14 +34,13 @@
                         FontSize="17"
                         HeightRequest="52"
                         Placeholder="First Name"
-                        PlaceholderColor="#AAFFFFFF"
                         Text="{Binding FirstName}"
                         TextColor="White" />
                 </Border>
 
                 <Border
                     Padding="16,0"
-                    BackgroundColor="#80FFFFFF"
+                    BackgroundColor="#28396C"
                     Stroke="White"
                     StrokeShape="RoundRectangle 10"
                     StrokeThickness="1.5">
@@ -53,14 +48,13 @@
                         FontSize="17"
                         HeightRequest="52"
                         Placeholder="Last Name"
-                        PlaceholderColor="#AAFFFFFF"
                         Text="{Binding LastName}"
                         TextColor="White" />
                 </Border>
 
                 <Border
                     Padding="16,0"
-                    BackgroundColor="#55FFFFFF"
+                    BackgroundColor="#28396C"
                     Stroke="White"
                     StrokeShape="RoundRectangle 10"
                     StrokeThickness="1.5">
@@ -70,14 +64,13 @@
                         IsEnabled="False"
                         Keyboard="Email"
                         Placeholder="Email"
-                        PlaceholderColor="#AAFFFFFF"
                         Text="{Binding Email}"
                         TextColor="#CCFFFFFF" />
                 </Border>
 
                 <Border
                     Padding="16,0"
-                    BackgroundColor="#80FFFFFF"
+                    BackgroundColor="#28396C"
                     Stroke="White"
                     StrokeShape="RoundRectangle 10"
                     StrokeThickness="1.5">
@@ -90,15 +83,28 @@
                         Text="{Binding Mobile}"
                         TextColor="White" />
                 </Border>
+                <ImageButton
+                    Margin="0,50,0,0"
+    BackgroundColor="Transparent"
+    Command="{Binding DeleteCommand}"
+    HeightRequest="36"
+    HorizontalOptions="End"
+    IsVisible="{Binding IsDeleteVisible}"
+    Source="trash.png"
+    VerticalOptions="Start"
+    WidthRequest="36" />
+                <Border Margin="0,50,0,0">
 
+                </Border>
+              
                 <Button
-                    BackgroundColor="#5E35B1"
+                    Margin="0,16,0,0"
+                    BackgroundColor="#28396C"
                     Command="{Binding UpdateCommand}"
                     CornerRadius="10"
                     FontAttributes="Bold"
                     FontSize="18"
                     HeightRequest="52"
-                    Margin="0,16,0,0"
                     Text="Update"
                     TextColor="White" />
 

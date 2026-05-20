@@ -4,7 +4,7 @@
              x:Class="FinalProjectNoaRippel.Views.AdminPage"
              xmlns:vm="clr-namespace:FinalProjectNoaRippel.ViewModels"
              x:DataType="vm:AdminPageViewModel"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="White">
     <VerticalStackLayout Padding="24,40" Spacing="24">
 
         <Label
