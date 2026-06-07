@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-
+// מנהל את דף עריכת רשימת הקניות
 namespace FinalProjectNoaRippel.ViewModels
 {
     public class EditShoppingListViewModel : ViewModelBase
@@ -32,13 +32,14 @@ namespace FinalProjectNoaRippel.ViewModels
 
             _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
-
+            // מסיר פריט מהרשימה המקומית בלבד לא שומר עד לחיצה על שמור
             DeleteItemCommand = new Command<ShoppingItem>(item =>
             {
                 if (item != null)
                     Items.Remove(item);
             });
 
+            // מוסיף שורה ריקה חדשה לרשימה
             AddItemCommand = new Command(() =>
                 Items.Add(new ShoppingItem { Text = "" }));
 
@@ -60,14 +61,14 @@ namespace FinalProjectNoaRippel.ViewModels
                                 .Child(_uid)
                                 .Child("shoppingList")
                                 .PostAsync(new { Text = item.Text });
-                    // שומר את ה-Key החדש בפריט
+                    // שומר את המפתח החדש בפריט
                     item.Key = result.Key;
                 }
 
                 await Shell.Current.GoToAsync("///ShoppingListPage");
             });
 
-            // טוען את הרשימה הקיימת מ-Firebase כשהדף נפתח
+            // טוען את הרשימה הקיימת מ Firebase כשהדף נפתח
             _ = LoadItemsAsync();
         }
 

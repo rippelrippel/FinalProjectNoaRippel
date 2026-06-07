@@ -7,7 +7,7 @@ namespace FinalProjectNoaRippel.ViewModels
 {
     public class UserDetailsPageViewModel : ViewModelBase, IQueryAttributable
     {
-        private readonly FirebaseClient _db;
+        private readonly FirebaseClient _db;// חיבור לממסד הנתנוים בזמן אמת
         private User? _selectedUser;
         private string? _firstName;
         private string? _lastName;
@@ -35,7 +35,7 @@ namespace FinalProjectNoaRippel.ViewModels
             get => _mobile;
             set { _mobile = value; OnPropertyChanged(); }
         }
-        public bool IsDeleteVisible
+        public bool IsDeleteVisible        // שולט בנראות כפתור המחיקה רק אם המשתמש הנוכחי הוא מנהל
         {
             get => _isDeleteVisible;
             set { _isDeleteVisible = value; OnPropertyChanged(); }
@@ -51,10 +51,10 @@ namespace FinalProjectNoaRippel.ViewModels
             UpdateCommand = new Command(async () => await OnUpdateAsync());
             DeleteCommand = new Command(async () => await OnDeleteAsync());
 
-            FillUserDetails();
+            FillUserDetails();// טוען את פרטי המשתמש
         }
 
-        private void FillUserDetails()
+        private void FillUserDetails()// טוען את פרטי המשתמש לשדות עצמן
         {
             var user = (App.Current as App)?.CurrentUser;
             if (user == null) return;
@@ -81,6 +81,7 @@ namespace FinalProjectNoaRippel.ViewModels
             Email = user.UserEmail;
             Mobile = user.UserMobile;
 
+            // מציג כפתור מחיקה אבל רק בעבור מנהל
             var currentUser = (App.Current as App)?.CurrentUser;
             IsDeleteVisible = currentUser?.IsAdmin == true;
         }
@@ -102,7 +103,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 IsAdmin = _selectedUser.IsAdmin
             };
 
-            // מעדכן ב-Firebase
+            // מעדכן בפייר בייס
             await _db
                 .Child("users")
                 .Child(_selectedUser.Id!)
@@ -116,7 +117,7 @@ namespace FinalProjectNoaRippel.ViewModels
             await Shell.Current.DisplayAlert("Success", "User updated successfully.", "OK");
         }
 
-        private async Task OnDeleteAsync()
+        private async Task OnDeleteAsync()//מחיקת המשמתש רק למנהל
         {
             if (_selectedUser == null) return;
 
@@ -127,7 +128,7 @@ namespace FinalProjectNoaRippel.ViewModels
 
             if (!confirmed) return;
 
-            // מוחק מ-Firebase
+            // מוחק מפייר בייס
             await _db
                 .Child("users")
                 .Child(_selectedUser.Id!)

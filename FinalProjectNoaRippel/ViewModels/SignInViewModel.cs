@@ -16,7 +16,7 @@ namespace FinalProjectNoaRippel.ViewModels
         private bool _signInMessageVisible = false;
         private string _loginMessage;
         private string _passIcon = FontHelper.OPEN_EYE_ICON;
-        private readonly IAppUserRepository _db;
+        private readonly IAppUserRepository _db;//חיבור לממסד נתונים אבל לא מי שעושה את הפעולה זה REP
 
         public ICommand ShowPasswordCommand { get; }
         public ICommand SignInCommand { get; }
@@ -24,9 +24,10 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public SignInViewModel()
         {
-            IAuthService authService = new FirebaseAuthService();
+            IAuthService authService = new FirebaseAuthService();//חיבור לאוטיטיקישן בממסד נתונים
             _db = new FirebaseUsersRepository(authService);
 
+            //חיבור כל הכפתורים
             ShowPasswordCommand = new Command(TogglePassword);
             SignInCommand = new Command(async () => await OnSignInAsync());
             NavigateToSignUpCommand = new Command(() =>
@@ -34,11 +35,11 @@ namespace FinalProjectNoaRippel.ViewModels
                 var signUpPage = IPlatformApplication.Current!.Services.GetService<SignUpPage>();
                 Application.Current!.Windows[0].Page = signUpPage;
             });
-
-            UserName = "rippel@gmail.com";
+            //DEBUG MODE
+            UserName = "admin@gmail.com";
             UserPassword = "123456";
         }
-
+        //VMB
         [ObservableProperty]
         private bool _isBusy;
 
@@ -68,6 +69,7 @@ namespace FinalProjectNoaRippel.ViewModels
             set { _loginMessage = value; OnPropertyChanged(); }
         }
 
+        //עושה שלא יהיה אפשר ללחוץ על הכפתור הזה  אם לא הכל ממולא
         public bool IsSignInButtonEnabled =>
             !string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(UserPassword);
 
@@ -77,6 +79,7 @@ namespace FinalProjectNoaRippel.ViewModels
             set { _passIcon = value; OnPropertyChanged(); }
         }
 
+        // מחליף בין הצגת סיסמה כנקודות לטקסט גלוי
         private void TogglePassword()
         {
             EntryAsPassword = !EntryAsPassword;
@@ -90,18 +93,22 @@ namespace FinalProjectNoaRippel.ViewModels
 
             try
             {
+                // מסך טעינה
                 IsBusy = true;
                 var user = await _db.SignInAsync(UserName!, UserPassword!);
                 IsBusy = false;
 
+                //שומר את המשתמש הנוכחי באפלקציה בשביל שכל הדפים יוכלו לדעת מי מחובר
                 (App.Current as App)!.CurrentUser = user;
 
                 var shellVm = IPlatformApplication.Current!.Services.GetService<AppShellViewModel>();
-                shellVm?.NotifyIsAdminChanged();
+                shellVm?.NotifyIsAdminChanged();//משתמש מנהל תציג לו את כל הרלוונטי
 
+                // מעבר למסך הראשי
                 var shell = IPlatformApplication.Current!.Services.GetService<AppShell>();
                 Application.Current!.Windows[0].Page = shell;
             }
+
             catch (Exception ex)
             {
                 IsBusy = false;

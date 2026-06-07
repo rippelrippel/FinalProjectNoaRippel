@@ -9,15 +9,18 @@ using System.Threading.Tasks;
 
 namespace FinalProjectNoaRippel.Service.DBService.FireBase
 {
+    // יורשת מפיירבייסנתוניםבזמןאמת ומממשת את IAppUserRepository.
+    //מחקלה לניהול משתמשים
     public class FirebaseUsersRepository : FirebaseRealtimeService, IAppUserRepository
     {
+        //משמש ליצירה ומחיקה של משתמשים בפיירבייסאוטיטיקישן
         private IAuthService _authService;
 
         public FirebaseUsersRepository(IAuthService authService)
         {
             _authService = authService;
         }
-
+        //מתחבר ומביא את נתוני המשתמש
         public async Task<User> SignInAsync(string userEmail, string userPassword)
         {
             try
@@ -34,7 +37,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception(ex.Message);
             }
         }
-
+        //יוצר משתמש
         public async Task<string> CreateAsync(User user)
         {
             try
@@ -52,7 +55,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception("SignUp new user failed!");
             }
         }
-
+        //מוחק משתמש
         public async Task DeleteAsync(User user)
         {
             try
@@ -69,7 +72,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception("Delete user failed!");
             }
         }
-
+        //צריךל בשביל שלא יקרוס אבל לא משתמשים בזה אם משתמשים קורס
         public List<User> GetAllAsync()
         {
             throw new NotImplementedException();
@@ -103,7 +106,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception($"FirebaseUsersRepository GetUserByIdAsync failed! {ex.Message}");
             }
         }
-
+        //עדכוןמשתמש
         public async Task UpdateAsync(User user)
         {
             try
@@ -123,7 +126,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception("Update failed!");
             }
         }
-
+        //שומר משתמש  חדש בממסד נתונים
         public async Task RegisterAppUser(User user)
         {
             try
@@ -164,7 +167,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception("SetToAdmin failed!");
             }
         }
-
+        //מביא את כל המשתמשים ממסדנתוינם
         public async Task<List<User>> GetAllUserAsync()
         {
             try
@@ -190,6 +193,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 return new List<User>();
             }
         }
+        // מאזין לשינויים במשתמשים בממסד בזמן אמת
 
         public IObservable<FirebaseEvent<User>> SubscribeToUserChanges()
         {

@@ -11,20 +11,22 @@ namespace FinalProjectNoaRippel.ViewModels
     {
         private readonly FirebaseClient _db;
         private string? _searchText;
-        private List<User> _allUsersCache = new();
+        private List<User> _allUsersCache = new();// שמור את כל המשתמשים בזיכרון 
 
-        public string? SearchText
-        {
+        public string? SearchText// טקסט החיפוש — מעדכן את כפתור הניקוי בכל שינוי
+                {
             get => _searchText;
             set
             {
                 _searchText = value;
                 OnPropertyChanged();
                 ClearFilterCommand?.ChangeCanExecute();
+                OnSearch();
             }
         }
 
-        public ObservableCollection<User> AllUsers { get; set; } = new();
+
+        public ObservableCollection<User> AllUsers { get; set; } = new();// רשימת המשתמשים המוצגת בדף 
         public Command? SearchCommand { get; }
         public Command? ClearFilterCommand { get; }
         public Command? GetAllUsersCommand { get; }
@@ -36,6 +38,7 @@ namespace FinalProjectNoaRippel.ViewModels
 
             SearchCommand = new Command(OnSearch);
             GetAllUsersCommand = new Command(async () => await LoadAllUsersAsync());
+            // כפתור ניקוי מופעל רק כשהחיפוש לא ריק
             ClearFilterCommand = new Command(ClearFilter, () => !string.IsNullOrEmpty(SearchText));
             UserDetailsPageCommand = new Command<User>(GoToAccountPage);
 
@@ -57,17 +60,21 @@ namespace FinalProjectNoaRippel.ViewModels
             catch { }
         }
 
-        private void ClearFilter()
+        private void ClearFilter()// מנקה את החיפוש וטוען מחדש את כל המשתמשים
         {
             SearchText = string.Empty;
             _ = LoadAllUsersAsync();
         }
 
-        private void OnSearch()
+        private void OnSearch()//מסנן את המשתמשים
         {
+
+
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                _ = LoadAllUsersAsync();
+                AllUsers.Clear();
+                foreach (var user in _allUsersCache)
+                    AllUsers.Add(user);
                 return;
             }
 
@@ -82,7 +89,7 @@ namespace FinalProjectNoaRippel.ViewModels
                 AllUsers.Add(user);
         }
 
-        private async void GoToAccountPage(User user)
+        private async void GoToAccountPage(User user)// מנווט לדף פרטי המשתמש שנבחר מעביר את אובייקט המשתמש כפרמטר
         {
             if (user == null) return;
             var param = new Dictionary<string, object> { { "selectedUser", user } };

@@ -8,61 +8,46 @@
     x:DataType="viewmodels:BlogRecipeViewModel"
     BackgroundColor="White"
     Title="Blog Recipe">
-
     <ContentPage.Resources>
         <helper:BoolToStrikethroughConverter x:Key="BoolToStrikethroughConverter" />
     </ContentPage.Resources>
-
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,10" Spacing="10">
 
-                <Label
-                    Text="{Binding RecipeName}"
-                    FontSize="28"
-                    FontAttributes="Bold"
-                    HorizontalOptions="Center"
-                    TextColor="Black" />
-
-                <Label
-                    Text="{Binding AuthorName, StringFormat='By {0}'}"
-                    FontSize="14"
-                    TextColor="Gray"
-                    HorizontalOptions="Center" />
-
+                <Label Text="{Binding RecipeName}" FontSize="28" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="Black" />
+                <Label Text="{Binding AuthorName, StringFormat='By {0}'}"
+                       FontSize="14" TextColor="Gray" HorizontalOptions="Center" />
+                <Label Text="{Binding CategoryName}" FontSize="13"
+                       TextColor="#28396C" FontAttributes="Italic"
+                       HorizontalOptions="Center" />
                 <BoxView HeightRequest="2" BackgroundColor="Gray" />
 
-                <Label
-                    Text="מרכיבים"
-                    FontSize="20"
-                    FontAttributes="Bold"
-                    HorizontalTextAlignment="End"
-                    TextColor="Black" />
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0" FontSize="14" TextColor="#555" VerticalOptions="Center">
+                        <Label.Text>
+                            <Binding Path="PrepTime" StringFormat="⏱ {0}" />
+                        </Label.Text>
+                    </Label>
+                    <Label Grid.Column="1" Text="מרכיבים" FontSize="20" FontAttributes="Bold"
+                           HorizontalTextAlignment="End" TextColor="Black" />
+                </Grid>
 
                 <CollectionView ItemsSource="{Binding Ingredients}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:CheckableItem">
                             <Grid ColumnDefinitions="*,Auto" Padding="5">
-                                <Label
-                                    Grid.Column="0"
-                                    Text="+"
-                                    FontSize="22"
-                                    TextColor="#28396C"
-                                    VerticalOptions="Center"
-                                    Margin="0,0,8,0">
+                                <Label Grid.Column="0" Text="+" FontSize="22" TextColor="#28396C"
+                                       VerticalOptions="Center" Margin="0,0,8,0">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddToShoppingListCommand}"
                                             CommandParameter="{Binding .}" />
                                     </Label.GestureRecognizers>
                                 </Label>
-                                <Label
-                                    Grid.Column="1"
-                                    Text="{Binding Text}"
-                                    FontSize="16"
-                                    HorizontalTextAlignment="End"
-                                    VerticalOptions="Center"
-                                    TextColor="Black" />
+                                <Label Grid.Column="1" Text="{Binding Text}" FontSize="16"
+                                       HorizontalTextAlignment="End" VerticalOptions="Center" TextColor="Black" />
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -70,22 +55,13 @@
 
                 <BoxView HeightRequest="2" BackgroundColor="Gray" />
 
-                <Label
-                    Text="הוראות הכנה"
-                    FontSize="20"
-                    FontAttributes="Bold"
-                    HorizontalTextAlignment="End"
-                    TextColor="Black" />
-
+                <Label Text="הוראות הכנה" FontSize="20" FontAttributes="Bold"
+                       HorizontalTextAlignment="End" TextColor="Black" />
                 <CollectionView ItemsSource="{Binding Instructions}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:CheckableItem">
-                            <Label
-                                Text="{Binding Text}"
-                                FontSize="16"
-                                HorizontalTextAlignment="End"
-                                TextColor="Black"
-                                Margin="0,5" />
+                            <Label Text="{Binding Text}" FontSize="16"
+                                   HorizontalTextAlignment="End" TextColor="Black" Margin="0,5" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -93,39 +69,32 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- כפתורים — רק אם זה המתכון שלך -->
-        <Grid
-            Grid.Row="1"
-            ColumnDefinitions="*,*"
-            Padding="24,12"
-            BackgroundColor="White"
-            IsVisible="{Binding IsOwner}">
+        <Grid Grid.Row="1" Padding="24,12" BackgroundColor="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Label
-                Grid.Column="0"
-                Text="&#xE872;"
-                FontFamily="MaterialIcons"
-                FontSize="28"
-                TextColor="Red"
-                HorizontalOptions="Start"
-                VerticalOptions="Center">
+            <Label Grid.Column="0" Text="&#xE872;" FontFamily="MaterialIcons"
+        FontSize="28" TextColor="Red" HorizontalOptions="Start" VerticalOptions="Center">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding DeleteFromBlogCommand}" />
+                    <TapGestureRecognizer Command="{Binding DeleteRecipeCommand}" />
                 </Label.GestureRecognizers>
             </Label>
 
-            <Label
-                Grid.Column="1"
-                Text="Edit"
-                FontSize="16"
-                TextColor="Black"
-                HorizontalOptions="End"
-                VerticalOptions="Center">
+            <Button Grid.Column="1" Text=" תגובות" BackgroundColor="#28396C"
+                    TextColor="White" CornerRadius="8" HeightRequest="40" WidthRequest="100"
+                    HorizontalOptions="Center"
+                    Command="{Binding GoToCommunityCommand}" />
+
+            <Label Grid.Column="2" Text="Edit" FontSize="16" TextColor="Black"
+                   HorizontalOptions="End" VerticalOptions="Center"
+                   IsVisible="{Binding IsOwner}">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding EditBlogRecipeCommand}" />
                 </Label.GestureRecognizers>
             </Label>
-
         </Grid>
     </Grid>
 </ContentPage>

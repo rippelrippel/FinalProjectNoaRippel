@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
+// מנהל את דף הוספת קטגוריה חדשה.
+// מאפשר הזנת שם, בחירת תמונה מהגלריה ושמירה בפייר בייס
 namespace FinalProjectNoaRippel.ViewModels
 {
+
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class AddFoodViewModel : ViewModelBase
     {
@@ -15,7 +17,8 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _selectedImage;
         private bool _hasImage = false;
         private string? _categoryName;
-
+        
+        // שם הקטגוריה החדשה
         public string? FoodName
         {
             get => _foodName;
@@ -27,7 +30,9 @@ namespace FinalProjectNoaRippel.ViewModels
             get => _selectedImage;
             set { _selectedImage = value; OnPropertyChanged(); }
         }
-
+        // שולט בנראות תצוגת התמונה
+        // true מציג תמונה
+        // false + מציג כפתור 
         public bool HasImage
         {
             get => _hasImage;
@@ -45,17 +50,18 @@ namespace FinalProjectNoaRippel.ViewModels
 
         public AddFoodViewModel()
         {
+            // פותח את גלריית המכשיר דוחס את התמונה וממיר ל בייס 64 
             PickImageCommand = new Command(async () =>
             {
-                var result = await MediaPicker.PickPhotoAsync();
+                var result = await MediaPicker.PickPhotoAsync();//פתיחת גלריה
                 if (result != null)
                 {
-                    using var stream = await result.OpenReadAsync();
+                    using var stream = await result.OpenReadAsync();//פותח קובץ
                     using var ms = new MemoryStream();
                     await stream.CopyToAsync(ms);
-                    var originalBytes = ms.ToArray();
+                    var originalBytes = ms.ToArray();//ממיר למערך
                     var compressedBytes = await CompressImageAsync(originalBytes);
-                    SelectedImage = Convert.ToBase64String(compressedBytes);
+                    SelectedImage = Convert.ToBase64String(compressedBytes);//ממיר לבסיס64 שאפשר לשמור בבממסד
                     HasImage = true;
                 }
             });
@@ -70,6 +76,7 @@ namespace FinalProjectNoaRippel.ViewModels
                     Name = FoodName.Trim(),
                     ImageSource = SelectedImage ?? "nophoto.jpeg"
                 };
+                // מוסיף את הקטגוריה דרך מאין פייג מודל שמנהל את הרשימה
 
                 var vm = IPlatformApplication.Current!.Services.GetService<MainPageViewModel>();
                 if (vm != null)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace FinalProjectNoaRippel.Service.DBService.FireBase
 {
+    //שירות מרכזי לניהול מתכונים מול Firebase Realtime Database
     public class RecipeFirebaseService
     {
         private readonly FirebaseClient _db;
@@ -19,7 +20,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
             _db = new FirebaseClient(DB_URL);
         }
 
-        // מביא את ה-Key של הקטגוריה לפי שם
+        // מביא את המפתח של הקטגוריה לפי שם
         private async Task<string?> GetCategoryKeyAsync(string uid, string categoryName)
         {
             var categories = await _db

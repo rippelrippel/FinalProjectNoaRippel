@@ -8,19 +8,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+// מנהל את דף פרטי המתכון.
+
 namespace FinalProjectNoaRippel.ViewModels
 {
+    // מקבל את שם המתכון ושם הקטגוריה מהניווט
     [QueryProperty(nameof(FoodName), "FoodName")]
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class RecipePageViewModel : ViewModelBase
     {
+        //חיבור לפיירבייס
         private string? _foodName;
         private string? _categoryName;
         private readonly FirebaseClient _db;
-        private string? _recipeKey;
+        private string? _recipeKey;//בשביל מחיקתו
         private string? _categoryKey;
-        private Recipe? _currentRecipe;
-
+        private Recipe? _currentRecipe;//שוצר את האוביקט מתכון בשביל הבלוג
+        
+        public List<string> Tags { get; set; } = new();
+        public string PrepTime { get; set; } = "";
         public string FoodName
         {
             get => _foodName;
@@ -55,6 +61,7 @@ namespace FinalProjectNoaRippel.ViewModels
         {
             _db = new FirebaseClient("https://finalprojectnoarippel-default-rtdb.europe-west1.firebasedatabase.app/");
 
+            // מבקש אישור ומוחק את המתכון מ-
             DeleteRecipeCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
@@ -75,14 +82,17 @@ namespace FinalProjectNoaRippel.ViewModels
                 }
             });
 
+            // מנווט לדף עריכת המתכון עם הפרמטרים הנכונים
             GoToEditCommand = new Command(async () =>
                 await Shell.Current.GoToAsync($"///EditRecipePage?FoodName={_foodName}&CategoryName={_categoryName}"));
 
+            //מפעיל את BoolToStrikethroughConverter
             ToggleIngredientCommand = new Command<CheckableItem>(item =>
             {
                 if (item != null) item.IsChecked = !item.IsChecked;
             });
 
+            // מוסיף מרכיב לרשימת הקניות של המשתמש 
             AddToShoppingListCommand = new Command<CheckableItem>(async item =>
             {
                 if (item != null)
@@ -93,13 +103,13 @@ namespace FinalProjectNoaRippel.ViewModels
                 }
             });
 
+            // משתף את המתכון הנוכחי לבלוג המשותף של כל המשתמשים
             ShareToBlogCommand = new Command(async () =>
             {
                 if (_currentRecipe == null) return;
 
                 var user = (App.Current as App)?.CurrentUser;
                 var uid = user?.Id ?? "";
-
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
                     "שיתוף לבלוג",
                     $"לשתף את \"{RecipeName}\" לבלוג?",
@@ -110,12 +120,16 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 try
                 {
+                    // בונה את אובייקט המתכון לבלוג עם פרטי הכותב
                     var blogRecipe = new BlogRecipeItem
                     {
                         Name = _currentRecipe.Name,
                         ImageSource = _currentRecipe.ImageSource,
                         AuthorName = $"{user?.FirstName} {user?.LastName}",
                         AuthorId = uid,
+                        CategoryName = _currentRecipe.CategoryName,
+                        Tags = _currentRecipe.Tags ?? new(),
+                        PrepTime = _currentRecipe.PrepTime,
                         Ingredients = _currentRecipe.Ingredients ?? new(),
                         Instructions = _currentRecipe.Instructions ?? new(),
                         CreatedDate = DateTime.Now
@@ -135,15 +149,17 @@ namespace FinalProjectNoaRippel.ViewModels
         }
 
         public string RecipeName { get; set; } = "";
-        public ObservableCollection<CheckableItem> Ingredients { get; set; } = new();
-        public ObservableCollection<CheckableItem> Instructions { get; set; } = new();
+        public ObservableCollection<CheckableItem> Ingredients { get; set; } = new();//רשימת המרכיבים 
+        public ObservableCollection<CheckableItem> Instructions { get; set; } = new();//רשימת הוראות ההכנה
 
+        // טוען את פרטי המתכון המלאים
         private async Task LoadRecipeAsync(string foodName)
         {
             try
             {
                 var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
 
+                //מציאת המפתח של הקטגוריה 
                 var categories = await _db
                     .Child("users").Child(uid).Child("categories")
                     .OnceAsync<FoodCategoryData>();
@@ -160,10 +176,12 @@ namespace FinalProjectNoaRippel.ViewModels
                 var recipe = recipes.FirstOrDefault(r => r.Object.Name == foodName);
                 if (recipe == null) return;
 
+                // שומר מפתח ואובייקט לשימוש בפעולות מחיקה ושיתוף
                 _recipeKey = recipe.Key;
                 _currentRecipe = recipe.Object;
                 RecipeName = recipe.Object.Name ?? foodName;
 
+                // ממלא את רשימות המרכיבים וההוראות
                 Ingredients.Clear();
                 foreach (var i in recipe.Object.Ingredients ?? new())
                     Ingredients.Add(new CheckableItem { Text = i });
@@ -172,22 +190,17 @@ namespace FinalProjectNoaRippel.ViewModels
                 foreach (var i in recipe.Object.Instructions ?? new())
                     Instructions.Add(new CheckableItem { Text = i });
 
+                Tags = recipe.Object.Tags ?? new();
+                PrepTime = recipe.Object.PrepTime ?? "Unknown";
+                OnPropertyChanged(nameof(Tags));
+                OnPropertyChanged(nameof(PrepTime));
                 OnPropertyChanged(nameof(RecipeName));
             }
             catch { }
         }
-
-        public static void AddRecipe(string foodName, string recipeName, List<string> ingredients, List<string> instructions, string? image = null) { }
-        public static (string name, List<string> ingredients, List<string> instructions)? GetRecipe(string foodName) => null;
     }
 
-    public class RecipeDetails
-    {
-        public string? Name { get; set; }
-        public List<string>? Ingredients { get; set; }
-        public List<string>? Instructions { get; set; }
-    }
-
+    // כשמסמנים מופעל BoolToStrikethroughConverter 
     public class CheckableItem : ViewModelBase
     {
         private bool _isChecked;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
-
+// קובץ עזר המכיל קבועים וקונבקטורים שמשמשים לכלהאפלקציה
 namespace FinalProjectNoaRippel.Helper
 {
     public static class FontHelper
@@ -14,6 +14,8 @@ namespace FinalProjectNoaRippel.Helper
         public const string OPEN_EYE_ICON = "eye_close.png";
     }
     public class BoolToStrikethroughConverter : IValueConverter
+        //מתקשר ל  RecipePageViewModel
+        //שלוחצים על המילה זה משנההולך לכאן בשביל לשנות מF לT
     {
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
@@ -23,14 +25,17 @@ namespace FinalProjectNoaRippel.Helper
         public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
             => throw new NotImplementedException();
     }
+    //קונברטור שממיר מחרוזת לתמונה+משמש להצגת תמונות קטגוריות ומתכונים שנשמרו
     public class Base64ToImageConverter : IValueConverter
     {
+        //  ההמרה עצמה מבייס 64 ללתמונה
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
             if (value is string source && !string.IsNullOrEmpty(source))
             {
                 System.Diagnostics.Debug.WriteLine($"Converting image, length: {source.Length}, first chars: {source.Substring(0, Math.Min(20, source.Length))}");
 
+                //מוודא שיש צורך בהמרה ולא מדובר בקובץ תמונהרגיל
                 if (!source.Contains("/") && source.Length < 100)
                     return ImageSource.FromFile(source);
 
@@ -50,6 +55,8 @@ namespace FinalProjectNoaRippel.Helper
             return null;
         }
 
+        //לא באמת עושה משוה אבל אם לא נכתוב את זה האינטרפייס יכתוב שגיאה
+        //המרה בחזרה אבל אין שימוש ולא נדרשת אם בטעות אני אקרא לזה זה יחזיר טעיות
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

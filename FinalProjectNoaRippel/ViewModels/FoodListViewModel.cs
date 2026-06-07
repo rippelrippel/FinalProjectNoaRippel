@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using static FinalProjectNoaRippel.ViewModels.MainPageViewModel;
 
+// מנהל את דף רשימת המתכונים בקטגוריה מסוימת.
 namespace FinalProjectNoaRippel.ViewModels
 {
+    // מקבל את שם הקטגוריה מהניווט
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class FoodListViewModel : ViewModelBase
     {
@@ -17,6 +19,7 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _categoryName;
         private string? _categoryKey;
 
+        // שומר את שם הקטגוריה הנוכחית משמש את אפסאלמודל לניווט חזור
         public static string? CurrentCategory { get; private set; }
 
         public string? CategoryName
@@ -27,10 +30,11 @@ namespace FinalProjectNoaRippel.ViewModels
                 _categoryName = value;
                 CurrentCategory = value;
                 OnPropertyChanged();
+                // טוען את המתכונים כשמגיעה שם הקטגוריה
                 _ = LoadFoodsAsync(value!);
             }
         }
-
+        // רשימת המתכונים המוצגת בדף וכפתור הוספה
         public ObservableCollection<FoodItem> FoodItems { get; set; } = new();
         public ICommand SelectFoodCommand { get; }
         public ICommand DeleteCategoryCommand { get; }
@@ -47,6 +51,7 @@ namespace FinalProjectNoaRippel.ViewModels
                     await Shell.Current.GoToAsync($"///RecipePage?FoodName={food.Name}&CategoryName={_categoryName}");
             });
 
+            // מבקש אישור ומוחק את הקטגוריה כולה כולל כל המתכונים
             DeleteCategoryCommand = new Command(async () =>
             {
                 bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
@@ -65,6 +70,7 @@ namespace FinalProjectNoaRippel.ViewModels
             });
         }
 
+        // טוען את כל המתכונים של הקטגוריה 
         private async Task LoadFoodsAsync(string categoryName)
         {
             var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
@@ -72,6 +78,7 @@ namespace FinalProjectNoaRippel.ViewModels
             {
                 FoodItems.Clear();
 
+                // מוצא את המפתח של הקטגוריה לפי השםשלה
                 var categories = await _db
                     .Child("users")
                     .Child(uid)
@@ -87,6 +94,7 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 _categoryKey = category.Key;
 
+                // טוען את כל המתכונים של הקטגוריה
                 var recipes = await _db
                     .Child("users").Child(uid)
                     .Child("categories").Child(_categoryKey)
@@ -109,6 +117,7 @@ namespace FinalProjectNoaRippel.ViewModels
             }
         }
 
+        // מוסיף מתכון חדש לפיירבייס ולרשימה המקומית
         public async Task AddFoodAsync(FoodItem food)
         {
             var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
@@ -135,6 +144,7 @@ namespace FinalProjectNoaRippel.ViewModels
             FoodItems.Insert(FoodItems.Count - 1, food);
         }
 
+        // מוחק מתכון
         public async Task RemoveFoodAsync(string foodName)
         {
             var uid = (App.Current as App)?.CurrentUser?.Id ?? "";
@@ -155,36 +165,14 @@ namespace FinalProjectNoaRippel.ViewModels
             FoodItems.Remove(item);
         }
 
-        public static void AddFoodToCategory(string category, FoodItem food)
-        {
-            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
-            _ = vm?.AddFoodAsync(food);
-        }
-
-        public static void RemoveFoodFromCategory(string foodName)
-        {
-            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
-            _ = vm?.RemoveFoodAsync(foodName);
-        }
-
-        public static string? GetCurrentCategoryKey()
-        {
-            var vm = IPlatformApplication.Current!.Services.GetService<FoodListViewModel>();
-            return vm?._categoryKey;
-        }
     }
-
-    public class FoodItemData
-    {
-        public string? Name { get; set; }
-        public string? ImageSource { get; set; }
-    }
-
+    // מחלקת נתונים המייצגת מתכון ברשימה
     public class FoodItem
     {
         public string? Key { get; set; }
         public string? Name { get; set; }
         public string? ImageSource { get; set; }
-        public bool IsAddButton { get; set; } = false;
+        public bool IsAddButton { get; set; } = false;    //מזהה האם הפריט הוא כפתור הוספה או מתכון רגיל
+
     }
 }

@@ -74,6 +74,7 @@ namespace FinalProjectNoaRippel.ViewModels
             }
             catch { }
         }
+        //מוסיף מרכיב לרשימה
         public async Task AddIngredientAsync(string text)
         {
             if (Items.Any(i => i.Text == text)) return;
@@ -86,11 +87,13 @@ namespace FinalProjectNoaRippel.ViewModels
 
             Items.Add(new ShoppingItem { Key = result.Key, Text = text });
         }
+        // גרסה סטטית מאפשרת הוספה לרשימה מכל מקום בקוד ללא גישה ישירה ל ווימודל
         public static void AddIngredient(string text)
         {
             var vm = IPlatformApplication.Current!.Services.GetService<ShoppingListViewModel>();
             _ = vm?.AddIngredientAsync(text);
         }
+        //טוען מחדש את הרשימה
         public async Task ReloadItemsAsync()
         {
             await LoadItemsAsync();
@@ -102,48 +105,12 @@ namespace FinalProjectNoaRippel.ViewModels
         public string Text { get; set; } = "";
     }
 
+    // מחלקת נתונים המייצגת פריט ברשימת הקניות
     public class ShoppingItem : ViewModelBase
     {
         public string? Key { get; set; }
         public string Text { get; set; } = "";
     }
 
-    /*
-            //אחד לתוכנה
-            public static ObservableCollection<ShoppingItem> _items = new();
-            //אחד למשתשמש לראות
-            public ObservableCollection<ShoppingItem> Items => _items;
-            public ICommand DeleteItemCommand { get; }
-            public ICommand GoToEditCommand { get; }
-            public ICommand AddToListCommand { get; }
-
-            public ShoppingListViewModel()
-            {
-                // מחיקת מרכיב
-                DeleteItemCommand = new Command<ShoppingItem>(item =>
-                {
-                    if (item != null)
-                        _items.Remove(item);
-                });
-
-                GoToEditCommand = new Command(async () =>
-                    await Shell.Current.GoToAsync("EditShoppingListPage"));
-
-                AddToListCommand = new Command<string>(text =>
-                {
-                    if (!string.IsNullOrWhiteSpace(text))
-                        AddIngredient(text);
-                });
-            }
-            public static void AddIngredient(string text)
-            {
-                if (!_items.Any(i => i.Text == text))
-                    _items.Add(new ShoppingItem { Text = text });
-            }
-        }
-        public class ShoppingItem : ViewModelBase
-        {
-            public string Text { get; set; } = "";
-        }*/
 }
     

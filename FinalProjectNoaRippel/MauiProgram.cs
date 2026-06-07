@@ -2,7 +2,9 @@
 using FinalProjectNoaRippel.ViewModels;
 using FinalProjectNoaRippel.Views;
 using Microsoft.Extensions.Logging;
-
+//סוג של דף הרשמה שמריצים את התוכנית זה כזה אומר 
+//אלה כל הוויאו מודלס שיש  תזכור אותם 
+//
 namespace FinalProjectNoaRippel
 {
     public static class MauiProgram
@@ -40,7 +42,7 @@ namespace FinalProjectNoaRippel
             builder.Services.AddTransient<BlogPage>();
             builder.Services.AddTransient<BlogRecipePage>();
             builder.Services.AddTransient<AddBlogRecipePage>();
-
+            builder.Services.AddTransient<CommunityPage>();
             // MainPage is Singleton so Shell can reuse it
             builder.Services.AddSingleton<MainPageView>();
 

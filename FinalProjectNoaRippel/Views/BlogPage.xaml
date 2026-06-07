@@ -8,59 +8,43 @@
     x:DataType="viewmodels:BlogViewModel"
     Title="Blog"
     BackgroundColor="White">
-
     <ContentPage.Resources>
         <helper:Base64ToImageConverter x:Key="Base64ToImageConverter" />
     </ContentPage.Resources>
-
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="16,20" Spacing="12">
 
-                <Label
-                    Text="Blog"
-                    FontSize="26"
-                    FontAttributes="Bold"
-                    HorizontalOptions="Center"
-                    TextColor="Black" />
+                <Label Text="Blog" FontSize="26" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="Black" />
+                <BoxView BackgroundColor="#38396C" HeightRequest="2.5" Margin="0,0,0,4" />
+
+                <Border Padding="10" Stroke="#ccc" StrokeShape="RoundRectangle 8" StrokeThickness="1">
+                    <Entry Placeholder="חפש לפי שם, קטגוריה או תווית..."
+                           Text="{Binding SearchText}"
+                           HorizontalTextAlignment="End" TextColor="Black" />
+                </Border>
 
                 <CollectionView ItemsSource="{Binding BlogRecipes}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:BlogRecipeItem">
-                            <Border
-                                Margin="0,5"
-                                Stroke="#E0E0E0"
-                                StrokeShape="RoundRectangle 12"
-                                BackgroundColor="#F5F5F5"
-                                HeightRequest="140">
+                            <Border Margin="0,5" Stroke="#E0E0E0"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="#F5F5F5"
+                                    HeightRequest="140">
                                 <Grid ColumnDefinitions="140,*" ColumnSpacing="0">
-
-                                    <!-- תמונה גדולה בצד שמאל -->
-                                    <Image
-                                        Grid.Column="0"
-                                        Aspect="AspectFill"
-                                        Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}"
-                                        WidthRequest="140"
-                                        HeightRequest="140" />
-
-                                    <!-- טקסט בצד ימין -->
-                                    <VerticalStackLayout
-                                        Grid.Column="1"
-                                        Padding="14,0"
-                                        VerticalOptions="Center"
-                                        Spacing="6">
-                                        <Label
-                                            Text="{Binding Name}"
-                                            FontSize="18"
-                                            FontAttributes="Bold"
-                                            TextColor="Black"
-                                            LineBreakMode="WordWrap" />
-                                        <Label
-                                            Text="{Binding AuthorName, StringFormat='By {0}'}"
-                                            FontSize="13"
-                                            TextColor="Gray" />
+                                    <Image Grid.Column="0" Aspect="AspectFill"
+                                           Source="{Binding ImageSource, Converter={StaticResource Base64ToImageConverter}}"
+                                           WidthRequest="140" HeightRequest="140" />
+                                    <VerticalStackLayout Grid.Column="1" Padding="14,0"
+                                                         VerticalOptions="Center" Spacing="4">
+                                        <Label Text="{Binding Name}" FontSize="18"
+                                               FontAttributes="Bold" TextColor="Black"
+                                               LineBreakMode="WordWrap" />
+                                        <Label Text="{Binding AuthorName, StringFormat='By {0}'}"
+                                               FontSize="13" TextColor="Gray" />
+                                     
                                     </VerticalStackLayout>
-
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectRecipeCommand}"
@@ -74,13 +58,9 @@
 
             </VerticalStackLayout>
         </ScrollView>
-
         <Grid Grid.Row="1" Padding="24,12" BackgroundColor="White">
-            <Button
-                BackgroundColor="#28396C"
-                Command="{Binding AddNewBlogRecipeCommand}"
-                Text="+ Add Recipe to Blog"
-                TextColor="White" />
+            <Button BackgroundColor="#28396C" Command="{Binding AddNewBlogRecipeCommand}"
+                    Text="+ Add Recipe to Blog" TextColor="White" />
         </Grid>
     </Grid>
 </ContentPage>

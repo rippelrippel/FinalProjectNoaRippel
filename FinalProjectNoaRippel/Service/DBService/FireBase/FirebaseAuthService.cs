@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 
 namespace FinalProjectNoaRippel.Service.DBService.FireBase
 {
+    //ממש את IAuthService
+    //עושה את האימות הנתונים מול Firebase Auth
+    // אחראית על יצירת משתמשים חדשים והתחברות משתמשים קיימים.
     public class FirebaseAuthService : IAuthService
     {
+        //התחברות ל Firebase Auth
         private FirebaseAuthClient? _authClient;
 
         public FirebaseAuthService()
@@ -27,7 +31,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
         {
             throw new NotImplementedException();
         }
-
+        //מתחבר לפיירבייס אטוטיקישן יוזר אידי של המשתמש
         public async Task<string> SignIn(string userEmail, string userPassword)
         {
             string errorMessage = string.Empty;
@@ -50,6 +54,7 @@ namespace FinalProjectNoaRippel.Service.DBService.FireBase
                 throw new Exception("SignIn failed!");
             }
         }
+        // יוצר משתמש חדש בפייר בייס אוטיטיקישן ומחזיר את היוזר אידי 
 
         public async Task<string> CreateAuth(string email, string password)
         {

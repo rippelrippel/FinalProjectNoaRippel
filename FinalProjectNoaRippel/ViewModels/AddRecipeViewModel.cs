@@ -20,6 +20,17 @@ namespace FinalProjectNoaRippel.ViewModels
         }
     }
 
+    public class TagItem : ViewModelBase
+    {
+        private bool _isSelected;
+        public string Name { get; set; } = "";
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; OnPropertyChanged(); }
+        }
+    }
+
     [QueryProperty(nameof(FoodName), "FoodName")]
     [QueryProperty(nameof(CategoryName), "CategoryName")]
     public class AddRecipeViewModel : ViewModelBase
@@ -29,20 +40,70 @@ namespace FinalProjectNoaRippel.ViewModels
         private string? _categoryName;
         private string? _selectedImage;
         private bool _hasImage = false;
+        private string? _prepTime;
 
-        public string? RecipeName { get => _recipeName; set { _recipeName = value; OnPropertyChanged(); } }
-        public string? FoodName { get => _foodName; set { _foodName = value; OnPropertyChanged(); } }
-        public string? CategoryName { get => _categoryName; set { _categoryName = value; OnPropertyChanged(); } }
-        public string? SelectedImage { get => _selectedImage; set { _selectedImage = value; OnPropertyChanged(); } }
-        public bool HasImage { get => _hasImage; set { _hasImage = value; OnPropertyChanged(); } }
+        public string? PrepTime
+        {
+            get => _prepTime;
+            set { _prepTime = value; OnPropertyChanged(); }
+        }
+
+        public string? RecipeName
+        {
+            get => _recipeName;
+            set { _recipeName = value; OnPropertyChanged(); }
+        }
+
+        public string? FoodName
+        {
+            get => _foodName;
+            set { _foodName = value; OnPropertyChanged(); }
+        }
+
+        public string? CategoryName
+        {
+            get => _categoryName;
+            set { _categoryName = value; OnPropertyChanged(); }
+        }
+
+        public string? SelectedImage
+        {
+            get => _selectedImage;
+            set { _selectedImage = value; OnPropertyChanged(); }
+        }
+
+        public bool HasImage
+        {
+            get => _hasImage;
+            set { _hasImage = value; OnPropertyChanged(); }
+        }
 
         public ICommand AddIngredientCommand { get; }
         public ICommand AddInstructionCommand { get; }
         public ICommand PickImageCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand AddTagCommand { get; }
+        public ICommand ToggleTagCommand { get; }
+        public ICommand GoBackCommand { get; }
 
         public ObservableCollection<IngredientItem> Ingredients { get; set; } = new();
         public ObservableCollection<IngredientItem> Instructions { get; set; } = new();
+
+        public ObservableCollection<TagItem> AvailableTags { get; set; } = new()
+        {
+            new TagItem { Name = "Cakes" },
+            new TagItem { Name = "Cookies" },
+            new TagItem { Name = "Fish" },
+            new TagItem { Name = "Pasta" },
+            new TagItem { Name = "Sauces" },
+            new TagItem { Name = "Soups" },
+            new TagItem { Name = "Salads" },
+            new TagItem { Name = "Meat" },
+            new TagItem { Name = "Chicken" },
+            new TagItem { Name = "Bread" },
+            new TagItem { Name = "Desserts" },
+            new TagItem { Name = "Breakfast" },
+        };
 
         public AddRecipeViewModel()
         {
@@ -63,6 +124,11 @@ namespace FinalProjectNoaRippel.ViewModels
                 }
             });
 
+            ToggleTagCommand = new Command<TagItem>(tag =>
+            {
+                if (tag != null) tag.IsSelected = !tag.IsSelected;
+            });
+
             SaveCommand = new Command(async () =>
             {
                 if (string.IsNullOrWhiteSpace(RecipeName) || string.IsNullOrWhiteSpace(FoodName))
@@ -80,11 +146,16 @@ namespace FinalProjectNoaRippel.ViewModels
 
                 try
                 {
+                    var selectedTags = AvailableTags.Where(t => t.IsSelected).Select(t => t.Name).ToList();
+                    var prepTimeValue = string.IsNullOrWhiteSpace(PrepTime) ? "Unknown" : PrepTime;
+
                     var recipe = new Recipe
                     {
                         Name = RecipeName,
                         ImageSource = SelectedImage ?? "nophoto.jpeg",
                         CategoryName = FoodName,
+                        Tags = selectedTags,
+                        PrepTime = prepTimeValue,
                         Ingredients = Ingredients.Select(i => i.Text).ToList(),
                         Instructions = Instructions.Select(i => i.Text).ToList(),
                         CreatedDate = DateTime.Now,
@@ -110,6 +181,25 @@ namespace FinalProjectNoaRippel.ViewModels
                 {
                     await Application.Current!.MainPage!.DisplayAlert("שגיאה", ex.Message, "אוקי");
                 }
+            });
+
+            AddTagCommand = new Command<string>(tagName =>
+            {
+                if (!string.IsNullOrWhiteSpace(tagName) &&
+                    !AvailableTags.Any(t => t.Name == tagName))
+                {
+                    AvailableTags.Add(new TagItem { Name = tagName, IsSelected = true });
+                }
+            });
+            GoBackCommand = new Command(async () =>
+            {
+                bool confirmed = await Application.Current!.MainPage!.DisplayAlert(
+                    "יציאה",
+                    "אם תצא השינויים לא יישמרו",
+                    "כן, צא",
+                    "ביטול");
+                if (confirmed)
+                    await Shell.Current.GoToAsync($"///FoodListPage?CategoryName={FoodName}");
             });
         }
 
